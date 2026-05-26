@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AUREON MENTE">
+<title>AUREON MENTE</title>
+<link rel="apple-touch-icon" href="https://i.imgur.com/DDGnjGY.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{
+  --cream:#fdfaf4;--white:#ffffff;
+  --gold:#c9a84c;--gold-l:#e8c97a;--gold-p:#faf3e0;--gold-d:#a07830;
+  --sage:#4a6e4e;--sage-m:#6a9e6e;--sage-l:#a8c5ac;--sage-p:#e8f0e9;
+  --text:#2c3e2d;--text-m:#5a7060;--text-l:#8fa893;
+  --border:rgba(74,110,78,0.15);--sh:rgba(74,110,78,0.08);
+  --card:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--cream);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(74,110,78,0.05) 0%,transparent 60%),
+  radial-gradient(ellipse 40% 30% at 100% 100%,rgba(201,168,76,0.04) 0%,transparent 50%);}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:999;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;transition:opacity .8s;}
+#splash.hide{opacity:0;pointer-events:none;}
+.spl-img{width:80px;height:80px;border-radius:18px;object-fit:cover;box-shadow:0 8px 32px rgba(201,168,76,0.3);animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.spl-line{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.spl-name{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);letter-spacing:6px;}
+.spl-name span{color:var(--gold-d);}
+.spl-sub{font-size:11px;letter-spacing:4px;color:var(--text-l);text-transform:uppercase;}
+.spl-tap{font-size:11px;letter-spacing:2px;color:var(--text-l);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:.3;}50%{opacity:1;}}
+
+/* APP */
+#app{position:fixed;inset:0;display:flex;flex-direction:column;z-index:1;}
+
+/* TOPBAR */
+.topbar{flex-shrink:0;background:rgba(253,250,244,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:11px 18px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:50;}
+.tb-logo{display:flex;align-items:center;gap:10px;}
+.tb-img{width:30px;height:30px;border-radius:8px;object-fit:cover;}
+.tb-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:var(--text);letter-spacing:2px;}
+.tb-name span{color:var(--gold-d);}
+.tb-score{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--gold-d);background:var(--gold-p);border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:4px 12px;font-weight:600;}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
+.content::-webkit-scrollbar{display:none;}
+
+/* PAGES */
+.page{display:none;}
+.page.ativo{display:block!important;}
+
+/* FLOAT NAV */
+.float-nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;gap:6px;background:rgba(253,250,244,.97);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:50px;padding:7px 14px;box-shadow:0 4px 24px var(--sh),0 8px 40px rgba(0,0,0,0.07);}
+.fn-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:7px 16px;border-radius:30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--text-l);transition:all .2s;}
+.fn-btn.ativo{background:var(--sage-p);color:var(--sage);}
+.fn-ico{font-size:19px;}
+
+/* DRAWER */
+.drawer-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0);pointer-events:none;transition:background .3s;}
+.drawer-overlay.open{background:rgba(0,0,0,0.35);pointer-events:all;}
+.drawer{position:fixed;bottom:0;left:0;right:0;z-index:301;background:var(--white);border-radius:24px 24px 0 0;padding:0 0 max(env(safe-area-inset-bottom),20px);transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:0 -4px 30px rgba(0,0,0,0.1);max-height:82vh;overflow-y:auto;}
+.drawer.open{transform:translateY(0);}
+.drawer-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 10px;}
+.drawer-title{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:var(--text-l);letter-spacing:3px;text-transform:uppercase;text-align:center;padding:4px 0 14px;border-bottom:1px solid var(--border);margin:0 18px;}
+.drawer-items{padding:10px 14px;}
+.drawer-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:14px;cursor:pointer;transition:all .2s;margin-bottom:3px;}
+.drawer-item:active{background:var(--sage-p);}
+.di-ico{width:42px;height:42px;border-radius:12px;background:var(--sage-p);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.di-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);}
+.di-sub{font-size:11px;color:var(--text-l);margin-top:1px;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px var(--sh);}
+.card-gold{background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(201,168,76,0.02));border-color:rgba(201,168,76,0.22);}
+
+/* SECTION TITLE */
+.st{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--gold-d);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.st::after{content:'';flex:1;height:1px;background:rgba(201,168,76,0.18);}
+
+/* PAD */
+.pad{padding:14px 16px 10px;}
+
+/* TOAST */
+/* AUREON MODAL */
+.am-overlay{position:fixed;inset:0;z-index:800;background:rgba(44,62,45,0.45);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center;padding:24px;}
+.am-overlay.open{opacity:1;pointer-events:all;}
+.am-modal{background:var(--white);border-radius:24px;padding:28px 24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(44,62,45,0.2);border:1px solid rgba(201,168,76,0.2);transform:translateY(20px) scale(.97);transition:transform .3s;position:relative;max-height:85vh;overflow-y:auto;}
+.am-overlay.open .am-modal{transform:translateY(0) scale(1);}
+.am-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--sage-p);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-m);}
+.am-letter{display:flex;align-items:flex-start;gap:12px;background:var(--sage-p);border-radius:13px;padding:11px 14px;border-left:3px solid var(--sage-l);margin-bottom:8px;}
+.am-letter.gold{background:var(--gold-p);border-left-color:var(--gold);}
+.aml-char{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold-d);line-height:1;flex-shrink:0;width:22px;}
+.am-letter.gold .aml-char{color:var(--sage);}
+.aml-word{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.aml-desc{font-size:12px;color:var(--text-m);line-height:1.5;}
+/* EDIT MODAL */
+.edit-overlay{position:fixed;inset:0;z-index:850;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.edit-overlay.open{opacity:1;pointer-events:all;}
+.edit-modal{background:var(--white);border-radius:20px 20px 0 0;padding:22px 20px max(env(safe-area-inset-bottom),20px);width:100%;max-width:540px;transform:translateY(100%);transition:transform .3s;}
+.edit-overlay.open .edit-modal{transform:translateY(0);}
+.toast{position:fixed;top:50%;left:50%;z-index:9999;transform:translate(-50%,-50%) scale(.9);background:var(--sage);color:#fff;padding:11px 22px;border-radius:30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.5px;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;white-space:nowrap;box-shadow:0 4px 20px rgba(74,110,78,0.35);}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* BOTÕES */
+.btn{border:none;border-radius:14px;padding:14px 20px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;transition:all .2s;}
+.btn-primary{background:linear-gradient(135deg,var(--sage),var(--sage-m));color:#fff;box-shadow:0 4px 14px var(--sh);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#fff;box-shadow:0 4px 14px rgba(201,168,76,0.25);}
+.btn:active{transform:scale(.98);}
+
+/* TABS */
+.tabs{display:flex;background:var(--sage-p);border-radius:12px;padding:4px;margin-bottom:16px;gap:3px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex:0 0 auto;padding:8px 14px;border-radius:9px;border:none;color:var(--text-l);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;background:transparent;white-space:nowrap;}
+.tab-btn.ativo{background:var(--white);color:var(--sage);box-shadow:0 1px 6px var(--sh);}
+
+/* AFIRMAÇÃO */
+.afirm-item{background:var(--sage-p);border-radius:12px;padding:14px 16px;margin-bottom:8px;cursor:pointer;border-left:3px solid var(--sage-l);transition:all .2s;}
+.afirm-item.lida{background:var(--gold-p);border-left-color:var(--gold);}
+.afirm-text{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--text);line-height:1.55;}
+.afirm-cat{font-family:'Cormorant Garamond',serif;font-size:11px;font-weight:700;color:var(--gold-d);letter-spacing:3px;text-transform:uppercase;padding:10px 0 8px;border-bottom:1px solid rgba(201,168,76,0.15);margin-bottom:10px;margin-top:6px;}
+
+/* CHECK ITEMS */
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid rgba(201,168,76,0.07);cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.check-item.done .ci-label{text-decoration:line-through;color:var(--text-l);}
+.ci-box{width:22px;height:22px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:1px;transition:all .2s;}
+.check-item.done .ci-box{background:var(--sage-m);border-color:var(--sage-m);color:#fff;}
+.ci-label{font-size:14px;color:var(--text);line-height:1.4;flex:1;}
+
+/* ACCORDION */
+.accord{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.accord-h{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.accord-num{width:30px;height:30px;border-radius:8px;background:var(--sage-p);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700;color:var(--sage);flex-shrink:0;}
+.accord-t{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);flex:1;letter-spacing:.3px;}
+.accord-ico{color:var(--text-l);font-size:14px;transition:transform .3s;}
+.accord-ico.open{transform:rotate(180deg);}
+.accord-body{display:none;padding:4px 16px 16px;border-top:1px solid var(--border);}
+.accord-body.open{display:block;}
+.accord-body p{font-size:13px;color:var(--text-m);line-height:1.8;margin-top:10px;}
+.accord-body strong{color:var(--gold-d);}
+.accord-body em{color:var(--sage);font-style:normal;font-weight:600;}
+
+/* METAS */
+.meta-periodo{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;}
+.mp-head{background:linear-gradient(135deg,var(--sage),var(--sage-m));padding:14px 18px;display:flex;align-items:center;gap:10px;}
+.mp-ico{font-size:22px;}
+.mp-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:1px;}
+.mp-sub{font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px;}
+.mp-body{padding:12px 18px;}
+.meta-item-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(201,168,76,0.07);cursor:pointer;}
+.meta-item-row:last-child{border-bottom:none;}
+.meta-item-row.done .mi-text{text-decoration:line-through;color:var(--text-l);}
+.mi-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;transition:all .2s;}
+.meta-item-row.done .mi-check{background:var(--sage-m);border-color:var(--sage-m);color:#fff;}
+.mi-text{font-size:13px;color:var(--text);line-height:1.55;flex:1;}
+.add-meta{width:100%;background:transparent;border:1.5px dashed rgba(74,110,78,0.28);border-radius:10px;padding:11px;color:var(--text-l);font-size:13px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.add-meta:hover{border-color:var(--sage);color:var(--sage);}
+
+/* TEXTAREA / INPUT */
+.textarea{width:100%;background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:13px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;resize:none;outline:none;min-height:90px;transition:border-color .2s;line-height:1.6;}
+.textarea:focus{border-color:var(--sage-l);}
+.textarea::placeholder{color:var(--text-l);}
+.input-field{width:100%;background:var(--sage-p);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s;}
+.input-field:focus{border-color:var(--sage-l);}
+.input-field::placeholder{color:var(--text-l);}
+
+/* ÂNCORA */
+.ancora-block{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.anc-head{padding:14px 18px;display:flex;align-items:center;gap:12px;}
+.anc-time{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;color:var(--gold-d);background:var(--gold-p);border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:5px 14px;white-space:nowrap;}
+.anc-info-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);}
+.anc-info-sub{font-size:11px;color:var(--text-l);margin-top:2px;}
+.anc-frases{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px;}
+.anc-frase{background:var(--sage-p);border-radius:12px;padding:13px 15px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:all .2s;border:1.5px solid transparent;}
+.anc-frase.lida{background:var(--gold-p);border-color:rgba(201,168,76,0.3);}
+.anc-frase-ico{font-size:14px;flex-shrink:0;}
+.anc-frase-text{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--text);line-height:1.5;flex:1;}
+.anc-ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;flex-shrink:0;margin-top:2px;}
+.anc-frase.lida .anc-ck{background:var(--gold);border-color:var(--gold);color:#fff;}
+.anc-btn{margin:0 16px 16px;width:calc(100% - 32px);background:linear-gradient(135deg,var(--sage),var(--sage-m));border:none;border-radius:12px;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#fff;cursor:pointer;transition:all .2s;}
+.anc-btn.feito{opacity:.5;cursor:default;}
+
+/* LIVROS */
+.book-card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+.book-head{padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+.book-ord{width:34px;height:34px;border-radius:10px;background:var(--sage-p);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--sage);flex-shrink:0;}
+.book-card.lido .book-ord{background:var(--sage);color:#fff;}
+.book-card.lendo .book-ord{background:var(--gold-p);color:var(--gold-d);}
+.book-info{flex:1;}
+.book-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);}
+.book-author{font-size:12px;color:var(--text-l);margin-top:2px;}
+.book-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.btag{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:.5px;}
+.btag-mine{background:var(--gold-p);color:var(--gold-d);border:1px solid rgba(201,168,76,0.3);}
+.btag-xp{background:var(--sage-p);color:var(--sage);border:1px solid var(--border);}
+.btag-ind{background:#f0f4ff;color:#5a7fa8;border:1px solid rgba(90,127,168,0.2);}
+.book-body{padding:0 16px 16px;}
+.book-why{background:var(--sage-p);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text-m);line-height:1.7;margin-bottom:10px;border-left:3px solid var(--sage-l);}
+.book-why.gold-why{background:var(--gold-p);border-left-color:var(--gold);}
+.book-actions{display:flex;gap:8px;}
+.btn-lendo,.btn-lido{flex:1;padding:10px;border-radius:11px;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;}
+.btn-lendo{background:transparent;border:1.5px solid var(--gold);color:var(--gold-d);}
+.btn-lendo.ativo{background:var(--gold-p);}
+.btn-lido{background:transparent;border:1.5px solid var(--sage);color:var(--sage);}
+.btn-lido.ativo{background:var(--sage-p);}
+
+/* VIAGEM */
+.viagem-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.viagem-item:last-child{border-bottom:none;}
+.vi-flag{font-size:24px;}
+.vi-nome{font-size:14px;color:var(--text);flex:1;}
+.vi-ck{width:24px;height:24px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s;}
+.viagem-item.ok .vi-ck{background:var(--gold);border-color:var(--gold);color:#fff;}
+.viagem-item.ok .vi-nome{color:var(--gold-d);font-weight:600;}
+
+/* HOME ESPECIAL */
+.home-ring-wrap{display:flex;justify-content:center;padding:6px 0 10px;}
+.pratica-check{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px var(--sh);}
+.pratica-check.done{background:var(--sage-p);border-color:var(--sage-l);}
+.pc-ring{width:44px;height:44px;flex-shrink:0;position:relative;}
+.pc-ring svg{width:44px;height:44px;}
+.pc-info{flex:1;}
+.pc-nome{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);}
+.pc-sub{font-size:11px;color:var(--text-l);margin-top:2px;}
+.pratica-check.done .pc-nome{color:var(--sage);}
+.pc-arr{font-size:20px;color:var(--text-l);}
+.pratica-check.done .pc-arr{color:var(--sage);}
+
+/* QUADRO SHORTCUT */
+.quadro-btn{background:linear-gradient(135deg,var(--gold-d),var(--gold));border-radius:18px;padding:18px 20px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:14px;box-shadow:0 6px 24px rgba(201,168,76,0.3);transition:all .2s;border:none;width:100%;}
+.quadro-btn:active{transform:scale(.98);}
+.qb-ico{font-size:36px;flex-shrink:0;}
+.qb-info{flex:1;text-align:left;}
+.qb-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;}
+.qb-sub{font-size:12px;color:rgba(255,255,255,0.78);margin-top:3px;}
+.qb-arr{font-size:26px;color:rgba(255,255,255,0.7);}
+
+/* SLIDESHOW */
+#quadro-slideshow{display:none;position:fixed;inset:0;z-index:500;background:#000;flex-direction:column;}
+.ss-topbar{position:absolute;top:0;left:0;right:0;z-index:30;padding:max(env(safe-area-inset-top),14px) 16px 12px;background:linear-gradient(180deg,rgba(0,0,0,0.7),transparent);display:flex;align-items:center;gap:10px;}
+.ss-close{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;cursor:pointer;flex-shrink:0;}
+.ss-bottom{position:absolute;bottom:0;left:0;right:0;z-index:20;padding:16px 20px max(env(safe-area-inset-bottom),16px);background:linear-gradient(0deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 60%,transparent 100%);}
+.ss-frase{margin-bottom:14px;}
+.ss-ctrl{display:flex;align-items:center;justify-content:center;gap:10px;}
+.ss-btn{padding:10px 18px;border-radius:30px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(8px);font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#fff;cursor:pointer;}
+.ss-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:20;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:22px;color:rgba(255,255,255,0.85);cursor:pointer;}
+
+/* RESPONSIVO */
+/* BANNER */
+#home-banner-img{height:210px;}
+@media(min-width:768px){
+  .pad{padding:18px 26px 10px;}
+  .card{padding:22px;}
+  /* BANNER RESPONSIVO iPad */
+  #home-banner-wrap{padding:0 !important;}
+  #home-banner-wrap > div{border-radius:0 !important;margin-bottom:0 !important;box-shadow:none !important;}
+  #home-banner-img{height:400px !important;object-position:center 30% !important;}
+}
+@media(min-width:1024px){
+  #home-banner-img{height:460px !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" onclick="hideSplash()">
+  <img class="spl-img" src="https://i.imgur.com/uBLho4p.png" alt="AUREON MENTE">
+  <div class="spl-line"></div>
+  <div class="spl-name">AUREON <span>MENTE</span></div>
+  <div class="spl-sub">Mentalidade · Fé · Manifestação</div>
+  <div class="spl-line"></div>
+  <div class="spl-tap">toque para entrar</div>
+</div>
+
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-logo">
+      <img class="tb-img" src="https://i.imgur.com/uBLho4p.png" alt="AUREON">
+      <div class="tb-name" onclick="toggleAureonModal()" style="cursor:pointer;user-select:none;">AUREON <span>MENTE</span></div>
+    </div>
+    <div class="tb-score" id="tb-score">0 / 3</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== HOME ===== -->
+    <div id="page-home" class="page ativo" style="display:block">
+
+        <!-- BANNER CLICÁVEL -->
+        <div id="home-banner-wrap" style="padding:14px 16px 0">
+          <div onclick="abrirSlideshow()" style="border-radius:18px;overflow:hidden;box-shadow:0 4px 20px var(--sh);margin-bottom:14px;cursor:pointer;position:relative;">
+            <img src="https://i.imgur.com/1kUZLSV.png" alt="AUREON" id="home-banner-img"
+              style="width:100%;display:block;object-fit:cover;object-position:center center;">
+            <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,rgba(0,0,0,0.55),transparent);padding:12px 16px;display:flex;justify-content:flex-end;align-items:flex-end;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:rgba(255,255,255,0.82);letter-spacing:1.5px;">Quadro dos Sonhos &nbsp;•&nbsp; Minha Era Dourada</div>
+            </div>
+          </div>
+
+        <!-- DATA + SAUDAÇÃO -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:14px;box-shadow:0 2px 10px var(--sh);">
+          <div id="home-greeting" style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--text);line-height:1.2;"></div>
+          <div id="home-date" style="font-size:12px;color:var(--text-l);margin-top:4px;letter-spacing:.5px;"></div>
+        </div>
+
+        <!-- RITUAL MATINAL -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 12px var(--sh);">
+          <div style="padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text);">🌅 Ritual Matinal</div>
+              <div style="font-size:11px;color:var(--text-l);margin-top:2px;letter-spacing:.5px;">Assista ao acordar — conscientização master</div>
+            </div>
+            <button onclick="toggleRitual()" id="ritual-toggle-btn"
+              style="background:linear-gradient(135deg,var(--sage),var(--sage-m));border:none;border-radius:20px;padding:8px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;color:#fff;cursor:pointer;white-space:nowrap;">
+              ▶ ASSISTIR
+            </button>
+          </div>
+          <div id="ritual-player" style="display:none;padding:0 16px 16px;">
+            <video
+              id="ritual-video"
+              controls
+              playsinline
+              preload="metadata"
+              style="width:100%;border-radius:12px;background:#000;display:block;max-height:280px;">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/ritual_conscientiza%C3%A7%C3%A3o_jan.mp4" type="video/mp4">
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+        </div>
+
+        <!-- FRASE DO DIA -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:18px;padding:20px 18px;margin-bottom:14px;box-shadow:0 2px 12px var(--sh);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;right:0;width:70px;height:70px;background:radial-gradient(circle,rgba(201,168,76,0.1),transparent);border-radius:50%;"></div>
+          <div style="font-size:10px;letter-spacing:3px;color:var(--text-l);text-transform:uppercase;margin-bottom:10px;font-weight:600;">Minha Verdade de Hoje</div>
+          <div id="frase-texto" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--gold-d);line-height:1.45;min-height:50px;transition:opacity .4s;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;">
+            <button onclick="prevFrase()" style="background:none;border:none;font-size:22px;color:var(--text-l);cursor:pointer;padding:4px 8px;">‹</button>
+            <div id="frase-dots" style="display:flex;gap:5px;"></div>
+            <button onclick="nextFrase()" style="background:none;border:none;font-size:22px;color:var(--text-l);cursor:pointer;padding:4px 8px;">›</button>
+          </div>
+        </div>
+
+        <!-- 3 PRÁTICAS COM ANEL ÚNICO GRANDE -->
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 12px var(--sh);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);text-align:center;margin-bottom:18px;">Práticas do Dia</div>
+
+          <!-- ANEL ÚNICO GRANDE TRICOLOR -->
+          <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <!-- Tracks fundo -->
+              <circle cx="80" cy="80" r="66" fill="none" stroke="rgba(74,110,78,0.1)" stroke-width="16"/>
+              <!-- Segmento AFIRMAÇÕES (verde) — 120deg = 1/3 de 414.7 = 138.2 -->
+              <circle cx="80" cy="80" r="66" fill="none" stroke="var(--sage)" stroke-width="16"
+                stroke-dasharray="138.2 276.5" id="seg-afirm"
+                stroke-linecap="butt" transform="rotate(-90 80 80)"
+                style="transition:opacity .4s;opacity:0.2;"/>
+              <!-- Segmento GRATIDÃO (dourado) — começa em 120deg -->
+              <circle cx="80" cy="80" r="66" fill="none" stroke="var(--gold)" stroke-width="16"
+                stroke-dasharray="138.2 276.5" id="seg-grat"
+                stroke-linecap="butt" transform="rotate(30 80 80)"
+                style="transition:opacity .4s;opacity:0.2;"/>
+              <!-- Segmento VISUALIZAÇÃO (gold-d) — começa em 240deg -->
+              <circle cx="80" cy="80" r="66" fill="none" stroke="var(--gold-d)" stroke-width="16"
+                stroke-dasharray="138.2 276.5" id="seg-vis"
+                stroke-linecap="butt" transform="rotate(150 80 80)"
+                style="transition:opacity .4s;opacity:0.2;"/>
+              <text x="80" y="74" text-anchor="middle" fill="var(--text)" font-size="28" font-family="Cormorant Garamond" font-weight="700" id="ring-count-text">0</text>
+              <text x="80" y="90" text-anchor="middle" fill="var(--text-l)" font-size="11" font-family="Plus Jakarta Sans">de 3</text>
+            </svg>
+            <!-- Legenda -->
+            <div style="display:flex;gap:16px;margin-top:8px;">
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-m);"><div style="width:10px;height:10px;border-radius:50%;background:var(--sage);"></div>Afirmações</div>
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-m);"><div style="width:10px;height:10px;border-radius:50%;background:var(--gold);"></div>Gratidão</div>
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-m);"><div style="width:10px;height:10px;border-radius:50%;background:var(--gold-d);"></div>Visualização</div>
+            </div>
+          </div>
+
+          <!-- CHECKLIST -->
+          <div class="pratica-check" id="pc-afirm" onclick="irPratica('afirm')">
+            <div style="width:12px;height:12px;border-radius:50%;background:var(--sage);flex-shrink:0;margin-top:2px;"></div>
+            <div class="pc-info">
+              <div class="pc-nome">🧠 Afirmações</div>
+              <div class="pc-sub" id="pc-afirm-sub">Leia cada afirmação com emoção</div>
+            </div>
+            <div class="pc-arr" id="pc-afirm-ico">›</div>
+          </div>
+          <div class="pratica-check" id="pc-grat" onclick="irPratica('grat')">
+            <div style="width:12px;height:12px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:2px;"></div>
+            <div class="pc-info">
+              <div class="pc-nome">🙏 Gratidão</div>
+              <div class="pc-sub" id="pc-grat-sub">Sinta como se já fosse realidade</div>
+            </div>
+            <div class="pc-arr" id="pc-grat-ico">›</div>
+          </div>
+          <div class="pratica-check" id="pc-vis" onclick="irPratica('vis')">
+            <div style="width:12px;height:12px;border-radius:50%;background:var(--gold-d);flex-shrink:0;margin-top:2px;"></div>
+            <div class="pc-info">
+              <div class="pc-nome">🌌 Visualização</div>
+              <div class="pc-sub" id="pc-vis-sub">Veja sua vida dos sonhos em detalhes</div>
+            </div>
+            <div class="pc-arr" id="pc-vis-ico">›</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== METAS ===== -->
+    <div id="page-metas" class="page">
+      <div class="pad">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:4px;">Minhas Metas</div>
+        <div style="font-size:12px;color:var(--text-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">Era Dourada · 2026</div>
+        <div class="card card-gold" style="margin-bottom:16px;">
+          <div style="font-size:13px;color:var(--text-m);line-height:1.7;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:15px;">"Um objetivo é um sonho com prazo." — Napoleon Hill</div>
+        </div>
+        <!-- META 1 -->
+        <div class="meta-periodo">
+          <div class="mp-head"><div class="mp-ico">🔥</div><div><div class="mp-title">① Imediato — Volta ao BR</div><div class="mp-sub">Rotina, equilíbrio e prosperidade crescente</div></div></div>
+          <div class="mp-body" id="metas-maio">
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Rotina leve, saudável e com produtividade no trabalho</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Viver em equilíbrio — cuidando do meu corpo, mente, saúde, lazer e trabalho — com alegria e prazer</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Todos os dias com disposição, energia, motivado, animado, confiante e positivo</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Vibrando em altas frequências, atraindo tudo que desejo com facilidade — manifestando!</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Agindo sem procrastinação, decidindo com clareza mental e sabedoria</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Viver com prosperidade e abundância — dinheiro fluindo na minha vida fácil e consistentemente</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Lucro líquido de R$40.000 para mim — crescendo todos os dias de forma crescente</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Empresa/negócio de sucesso — a empresa trabalhando para mim, e não eu para ela</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Estou bonito, jovem, corpo definido — cuidando da minha estética definitivamente</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Nunca mais deixarei de me priorizar</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Total segurança financeira, desfrutando de uma vida de riqueza e liberdade de tempo para lazer e viajar</div></div>
+          </div>
+          <div style="padding:0 18px 14px"><button class="add-meta" onclick="addMeta('metas-maio')">+ Adicionar meta</button></div>
+        </div>
+        <!-- META 2 -->
+        <div class="meta-periodo">
+          <div class="mp-head"><div class="mp-ico">⭐</div><div><div class="mp-title">Em breve → Dezembro 2026</div><div class="mp-sub">Estabilização e chegada em Fort Lauderdale</div></div></div>
+          <div class="mp-body" id="metas-agosto">
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Totalmente estabilizado financeiramente — lucro consistente de R$80.000/mês para mim</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Morando em Fort Lauderdale no meu apartamento confortável de frente para o mar</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Comprando o carro que eu desejar, roupas, itens para a casa e multiplicando minha fortuna</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Contratei e pago o melhor seguro de saúde para meu pai e minha mãe</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Liberdade total financeira e de tempo — viajo quando e para onde quiser</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Diversificando múltiplas fontes de renda, investindo em renda passiva</div></div>
+          </div>
+          <div style="padding:0 18px 14px"><button class="add-meta" onclick="addMeta('metas-agosto')">+ Adicionar meta</button></div>
+        </div>
+        <!-- META 3 -->
+        <div class="meta-periodo">
+          <div class="mp-head"><div class="mp-ico">👑</div><div><div class="mp-title">14 de maio de 2028</div><div class="mp-sub">Milionário · Legado · Propósito</div></div></div>
+          <div class="mp-body" id="metas-dezembro">
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Sou de fato milionário</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Sucesso profissional pleno</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Aproveitando o melhor da vida em todas as dimensões</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Comprei meu iate</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Ajudo quem eu amo com alegria e abundância</div></div>
+            <div class="meta-item-row" onclick="toggleMeta(this)"><div class="mi-check"></div><div class="mi-text">Construí minha ONG beneficente para crianças carentes</div></div>
+          </div>
+          <div style="padding:0 18px 14px"><button class="add-meta" onclick="addMeta('metas-dezembro')">+ Adicionar meta</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MENTALIDADE ===== -->
+    <div id="page-mente" class="page">
+      <div class="pad">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:4px;">Mentalidade</div>
+        <div style="font-size:12px;color:var(--text-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">Práticas Diárias de Poder</div>
+        <div class="tabs" id="mente-tabs">
+          <button class="tab-btn ativo" onclick="switchMente('vis',this)">VISUALIZAÇÃO</button>
+          <button class="tab-btn" onclick="switchMente('pilares',this)">PILARES</button>
+          <button class="tab-btn" onclick="switchMente('grat',this)">GRATIDÃO</button>
+          <button class="tab-btn" onclick="switchMente('vis',this)">AFIRMAÇÕES</button>
+        </div>
+        <!-- AFIRMAÇÕES -->
+        <div id="mente-afirm" style="display:none">
+          <div class="card card-gold" style="margin-bottom:14px"><div style="font-size:13px;color:var(--text-m);line-height:1.7;">Toque em cada afirmação para marcar como lida. Sinta cada palavra como sua verdade absoluta.</div></div>
+          <div class="afirm-cat">Identidade + Força Interior</div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Eu sou forte, centrado e tenho total controle sobre a minha vida."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Minha mente é poderosa, minha fé é inabalável e nada externo tem poder sobre mim."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Eu sou blindado contra toda energia negativa e permaneço firme, calmo e confiante."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Eu me amo, valorizo minha vida, honro meu corpo e escolho todos os dias apenas o que me faz bem."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou uma pessoa iluminada, sábia e plenamente capaz de realizar todos os meus objetivos."</div></div>
+          <div class="afirm-cat">Dinheiro + Prosperidade</div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"O dinheiro flui até mim em quantidades altas, crescentes, com facilidade e frequência."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Meu trabalho na internet me gera lucros grandiosos de forma contínua e consistente."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Eu atraio oportunidades valiosas todos os dias e sei transformá-las em riqueza."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou um excelente administrador, multiplicador e investidor de dinheiro."</div></div>
+          <div class="afirm-cat">Vida dos Sonhos</div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Hoje eu vivo minha melhor fase. Sou minha melhor versão. Atraio tudo que desejo com facilidade."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou milionário. Tenho mais de um milhão de reais investidos. Minha riqueza cresce enquanto vivo com paz."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Vivo em João Pessoa beira-mar, com vista para o oceano, ao lado do Caio."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Eu sou abundância. Eu sou disciplina. Eu sou saúde. Eu sou prosperidade."</div></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="marcarPratica('afirm')">✓ AFIRMAÇÕES CONCLUÍDAS</button>
+        </div>
+        <!-- GRATIDÃO -->
+        <div id="mente-grat" style="display:none">
+          <div class="card card-gold" style="margin-bottom:14px"><div style="font-size:13px;color:var(--text-m);line-height:1.7;">Leia cada gratidão sentindo como se já fosse realidade. A emoção é o sinal que o Universo recebe.</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato por acordar todos os dias com disposição, energia e vontade genuína de cuidar de mim."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato porque fazer meus rituais e cuidar do meu corpo são um prazer — não uma obrigação."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato que a cada dia vejo no espelho os resultados do meu cuidado."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e profundamente grato porque hoje meu trabalho me proporciona viver em total segurança financeira."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato porque hoje sou milionário — minha fortuna me proporciona morar em Fort Lauderdale, dirigir minha BMW Alpina XB7 e viver a vida dos meus sonhos."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato por viver ao lado do Caio, com amor, parceria e leveza."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato porque posso cuidar dos meus pais — pagar o melhor plano de saúde e estar presente."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Sou feliz e grato por viver minha melhor fase — com saúde, riqueza, amor, propósito e paz."</div></div>
+          <div class="afirm-item" onclick="toggleAfirm(this)"><div class="afirm-text">"Obrigado, meu Deus Pai. Obrigado, Universo. Eu recebo tudo isso com gratidão, fé e alegria."</div></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="marcarPratica('grat')">✓ GRATIDÃO CONCLUÍDA</button>
+        </div>
+        <!-- VISUALIZAÇÃO -->
+        <div id="mente-vis">
+          <!-- ÁUDIO GUIADO -->
+          <div style="background:linear-gradient(135deg,var(--sage-p),rgba(201,168,76,0.06));border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;">
+            <div style="font-size:36px;text-align:center;margin-bottom:10px;">🌌</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;">Visualização Guiada</div>
+            <div style="font-size:13px;color:var(--text-m);line-height:1.7;text-align:center;margin-bottom:14px;">Feche os olhos, relaxe e deixe o áudio guiar sua mente.</div>
+            <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--border);">
+              <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gold-d);text-transform:uppercase;margin-bottom:8px;">🎧 Vamos Visualizar</div>
+              <audio controls preload="none" style="width:100%;height:44px;accent-color:var(--sage);">
+                <source src="https://taupe-ganache-fb77bc.netlify.app/introu%C3%A7%C3%A3o_pr%C3%A1ticas.mp3" type="audio/mpeg">
+              </audio>
+            </div>
+          </div>
+          <!-- PROTOCOLO -->
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;gap:12px;"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold-d);flex-shrink:0;">1</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;"><strong>Ambiente:</strong> Feche os olhos. 3 respirações profundas. Relaxe.</div></div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;gap:12px;"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold-d);flex-shrink:0;">2</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;"><strong>A Cena:</strong> Fort Lauderdale. Como está seu corpo? Sua casa beira-mar.</div></div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;gap:12px;"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold-d);flex-shrink:0;">3</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;"><strong>A Emoção:</strong> Sinta a alegria, a gratidão, a satisfação. Emoção é o combustível da manifestação.</div></div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;gap:12px;"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--gold-d);flex-shrink:0;">4</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;"><strong>Decreto:</strong> "Isso é real. Isso já é meu. Estou a caminho."</div></div>
+          </div>
+          <textarea class="textarea" id="vis-texto" placeholder="Descreva com detalhes o que visualizou hoje..." rows="4"></textarea>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="salvarVis()">✓ VISUALIZAÇÃO CONCLUÍDA</button>
+        </div>
+        <!-- PILARES -->
+        <div id="mente-pilares" style="display:none">
+          <div class="card card-gold" style="margin-bottom:16px">
+            <div style="font-size:13px;color:var(--text-m);line-height:1.7;">9 blocos de áudio com os pilares de Napoleon Hill e Bob Proctor. Ouça com fone, relaxado, como se fossem instruções diretas para sua mente. 🎧</div>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 1 — INTRODUÇÃO</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco01_introdu%C3%A7%C3%A3o.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 2 — DESEJO ARDENTE E PROPÓSITO DEFINIDO</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco02_desejo%20ardente.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 3 — FÉ, EMOÇÃO E AUTO-SUGESTÃO</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco03_%20f%C3%A9%2C%20emo%C3%A7%C3%A3o%20e%20auto-sugest%C3%A3o.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 4 — VISUALIZAÇÃO E IMAGINAÇÃO CRIATIVA</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco04_visualiza%C3%A7%C3%A3o%20e%20imagina%C3%A7%C3%A3o%20criativa.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 5 — IDENTIDADE, DISCIPLINA E AÇÃO ORGANIZADA</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco05_identidade%2C%20disciplina%20e%20a%C3%A7%C3%A3o%20organizada.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 6 — PERSISTÊNCIA, CONTROLE MENTAL E PROTEÇÃO DA ENERGIA</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco06_persist%C3%AAncia%2C%20controle%20mental%20e%20prote%C3%A7%C3%A3o%20da%20energia.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 7 — GRATIDÃO, CALMA E CONFIANÇA NO PROCESSO</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco07_gratid%C3%A3o%2C%20calma%20e%20confian%C3%A7a%20no%20processo.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 8 — DECISÃO, FUTURO E A NOVA VIDA QUE VOCÊ ESTÁ CONSTRUINDO</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco08_decis%C3%A3o%2C%20futuro%20e%20a%20nova%20vida%20que%20voc%C3%AA%20est%C3%A1%20construindo.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="background:var(--sage-p);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--sage);text-transform:uppercase;margin-bottom:8px;">BLOCO 9 — ENCERRAMENTO, IDENTIDADE E ENTREGA</div>
+            <audio controls preload="none" style="width:100%;height:40px;accent-color:var(--sage);">
+              <source src="https://taupe-ganache-fb77bc.netlify.app/bloco09_encerramento%2C%20identidade%20e%20entrega.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div style="margin-top:16px" class="card card-gold">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--gold-d);margin-bottom:10px;">📖 Textos dos Pilares</div>
+            <div id="pilares-list"></div>
+          </div>
+        </div>
+
+        <!-- ÂNCORAS -->
+        <div id="mente-ancoras" style="display:none">
+          <div class="card card-gold" style="margin-bottom:14px"><div style="font-size:13px;color:var(--text-m);line-height:1.7;">4 momentos estratégicos. Programe seu subconsciente ao longo do dia para vibrar na frequência da sua Era Dourada.</div></div>
+          <div class="ancora-block">
+            <div class="anc-head"><div class="anc-time">05:40 ☀️</div><div><div class="anc-info-title">Despertar</div><div class="anc-info-sub">Instrução para o corpo agir</div></div></div>
+            <div class="anc-frases">
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">💧</div><div class="anc-frase-text">"Água, tênis, porta. O resto vem depois."</div><div class="anc-ck"></div></div>
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">🌅</div><div class="anc-frase-text">"Hoje eu cuido de mim primeiro. Tudo que desejo começa aqui."</div><div class="anc-ck"></div></div>
+            </div>
+            <button class="anc-btn" onclick="marcarAnc(this)">✓ FIZ ESSE MOMENTO</button>
+          </div>
+          <div class="ancora-block">
+            <div class="anc-head"><div class="anc-time">11:45 🙏</div><div><div class="anc-info-title">Gratidão Antecipada</div><div class="anc-info-sub">Vibração alta antes do almoço</div></div></div>
+            <div class="anc-frases">
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">✨</div><div class="anc-frase-text">"Obrigado pela clareza mental, produtividade, foco e energia que tenho."</div><div class="anc-ck"></div></div>
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">💰</div><div class="anc-frase-text">"Sou feliz e grato que o dinheiro chega até mim hoje em quantidades altas e crescentes!"</div><div class="anc-ck"></div></div>
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">💪</div><div class="anc-frase-text">"Obrigado pelo meu corpo saudável, disposto, bonito e cada dia mais forte."</div><div class="anc-ck"></div></div>
+            </div>
+            <button class="anc-btn" onclick="marcarAnc(this)">✓ FIZ ESSE MOMENTO</button>
+          </div>
+          <div class="ancora-block">
+            <div class="anc-head"><div class="anc-time">13:20 💰</div><div><div class="anc-info-title">Afirmações</div><div class="anc-info-sub">Volta ao trabalho com poder</div></div></div>
+            <div class="anc-frases">
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">🏆</div><div class="anc-frase-text">"Eu sou grato, sou capaz, sou merecedor e realizo todos os meus desejos."</div><div class="anc-ck"></div></div>
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">💵</div><div class="anc-frase-text">"Dinheiro flui para mim com facilidade e frequência crescente."</div><div class="anc-ck"></div></div>
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">🔥</div><div class="anc-frase-text">"Eu sou um homem saudável, forte, disciplinado e atraente."</div><div class="anc-ck"></div></div>
+            </div>
+            <button class="anc-btn" onclick="marcarAnc(this)">✓ FIZ ESSE MOMENTO</button>
+          </div>
+          <div class="ancora-block">
+            <div class="anc-head"><div class="anc-time">20:30 🌙</div><div><div class="anc-info-title">Gratidão Noturna</div><div class="anc-info-sub">Fechar o dia — dezembro 2026</div></div></div>
+            <div class="anc-frases">
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">🙏</div><div class="anc-frase-text">"Obrigado, Deus, por este dia. Eu me cuidei. Eu avancei. Eu escolhi bem."</div><div class="anc-ck"></div></div>
+              <div class="anc-frase" onclick="toggleAnc(this)"><div class="anc-frase-ico">💎</div><div class="anc-frase-text">"Obrigado por dezembro de 2026 — sou milionário, estou leve, estou feliz, estou em paz."</div><div class="anc-ck"></div></div>
+            </div>
+            <button class="anc-btn" onclick="marcarAnc(this)">✓ FIZ ESSE MOMENTO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CONHECIMENTO ===== -->
+    <div id="page-conhecimento" class="page">
+      <div class="pad">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:4px;">Conhecimento</div>
+        <div style="font-size:12px;color:var(--text-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">Biblioteca · Aprender · Viagens</div>
+        <div class="tabs" id="conhec-tabs">
+          <button class="tab-btn ativo" onclick="switchConhec('biblioteca',this)">BIBLIOTECA</button>
+          <button class="tab-btn" onclick="switchConhec('aprender',this)">APRENDER</button>
+          <button class="tab-btn" onclick="switchConhec('bucket',this)">BUCKET LIST</button>
+        </div>
+        <!-- BIBLIOTECA -->
+        <div id="conhec-biblioteca">
+          <div class="card card-gold" style="margin-bottom:14px"><div style="font-size:13px;color:var(--text-m);">Leitura é o melhor investimento que existe. Cada livro lido é um nível acima.</div></div>
+          <div id="biblioteca-lista"></div>
+          <button class="add-meta" id="add-livro-btn" onclick="toggleAddLivro()">+ Adicionar livro</button>
+          <div id="add-livro-form" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:10px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:12px">📖 Novo Livro</div>
+            <input class="input-field" id="livro-titulo" type="text" placeholder="Título" style="margin-bottom:8px;display:block">
+            <input class="input-field" id="livro-autor" type="text" placeholder="Autor" style="margin-bottom:8px;display:block">
+            <textarea class="textarea" id="livro-why" placeholder="Por que quero ler?" rows="2" style="min-height:60px;margin-bottom:10px;"></textarea>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" style="flex:1;padding:12px" onclick="addLivro()">ADICIONAR</button>
+              <button class="btn" style="padding:12px 16px;background:transparent;border:1.5px solid var(--border);color:var(--text-m)" onclick="toggleAddLivro()">CANCELAR</button>
+            </div>
+          </div>
+        </div>
+        <!-- APRENDER -->
+        <div id="conhec-aprender" style="display:none">
+          <div class="card card-gold" style="margin-bottom:14px"><div style="font-size:13px;color:var(--text-m);">Habilidades que quero desenvolver. Toque em ✏️ para editar ou + para adicionar.</div></div>
+          <div id="aprender-lista"></div>
+          <button class="add-meta" onclick="addAprender()">+ Adicionar habilidade</button>
+        </div>
+        <!-- BUCKET LIST -->
+        <div id="conhec-bucket" style="display:none">
+          <div class="card card-gold" style="margin-bottom:14px"><div style="font-size:13px;color:var(--text-m);">Cada destino conquistado é prova de que você está vivendo a vida que imaginou. Toque para marcar · ✏️ para editar.</div></div>
+          <div class="card" id="viagens-lista"></div>
+          <button class="add-meta" style="margin-top:10px;" onclick="addViagem()">+ Adicionar destino</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DIÁRIO ===== -->
+    <div id="page-diario" class="page">
+      <div class="pad">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:4px;">Diário</div>
+        <div style="font-size:12px;color:var(--text-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;">Gratidão · Reflexão · Intenção</div>
+        <div class="card card-gold" style="margin-bottom:16px;">
+          <div style="font-size:13px;color:var(--text-m);line-height:1.7;font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;">"Um diário é o espelho mais honesto que existe. Quem escreve sobre si mesmo se conhece. Quem se conhece se transforma."</div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--gold-d);margin-bottom:8px;">🌿 3 Gratidões de Hoje</div>
+          <textarea class="textarea" id="d-grat" placeholder="Hoje sou grato por..." rows="3"></textarea>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--gold-d);margin-bottom:8px;">📖 Como Foi Meu Dia</div>
+          <textarea class="textarea" id="d-dia" placeholder="Hoje eu..." rows="4"></textarea>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--gold-d);margin-bottom:8px;">💡 Reflexão</div>
+          <textarea class="textarea" id="d-refl" placeholder="O que aprendi sobre mim hoje..." rows="3"></textarea>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--gold-d);margin-bottom:8px;">🌅 Intenção para Amanhã</div>
+          <textarea class="textarea" id="d-int" placeholder="Amanhã eu vou..." rows="3"></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-bottom:20px" onclick="salvarDiario()">✓ SALVAR DIÁRIO</button>
+        <!-- HISTÓRICO -->
+        <div class="st">📅 Entradas Anteriores</div>
+        <div id="diario-historico"></div>
+      </div>
+    </div>
+
+    <!-- ===== TRILHA DE PODER ===== -->
+    <div id="page-trilha" class="page">
+      <div class="pad">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);margin-bottom:4px;">Trilha de Poder</div>
+        <div style="font-size:12px;color:var(--text-l);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">Afirmações · Gratidão · Vídeos</div>
+
+        <div class="card card-gold" style="margin-bottom:16px;">
+          <div style="font-size:13px;color:var(--text-m);line-height:1.7;">Coloque na televisão via <strong style="color:var(--gold-d)">AirPlay</strong>, fique em pé e deixe as afirmações penetrarem enquanto você se movimenta. Reprogramação subconsciente no nível mais alto. 🔥</div>
+        </div>
+
+        <!-- PLAY ALL -->
+        <button onclick="playTrilha(0)" style="display:flex;align-items:center;justify-content:center;gap:12px;width:100%;background:linear-gradient(135deg,var(--sage),var(--sage-m));color:#fff;border:none;border-radius:16px;padding:18px 20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;letter-spacing:2px;cursor:pointer;margin-bottom:16px;box-shadow:0 4px 20px var(--sh);">
+          ▶ PLAY COMPLETO
+        </button>
+
+        <!-- PLAYER EMBED -->
+        <div id="trilha-player-wrap" style="display:none;border-radius:16px;overflow:hidden;margin-bottom:16px;background:#000;">
+          <!-- YouTube (para vídeos YT) -->
+          <div id="trilha-yt-wrap" style="position:relative;aspect-ratio:16/9;display:none;">
+            <iframe id="trilha-iframe" src=""
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+              allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen>
+            </iframe>
+          </div>
+          <!-- Native video (para Drive) -->
+          <video id="trilha-video-native" controls playsinline preload="metadata"
+            style="width:100%;display:none;max-height:300px;background:#000;">
+            <source id="trilha-video-src" src="" type="video/mp4">
+          </video>
+          <!-- Controles -->
+          <div style="background:rgba(0,0,0,0.75);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+            <div id="trilha-titulo-atual" style="font-family:'Cormorant Garamond',serif;font-size:14px;color:#fff;font-style:italic;flex:1;"></div>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+              <button onclick="trilhaPrev()" style="background:rgba(255,255,255,0.15);border:none;border-radius:20px;padding:6px 12px;color:#fff;font-size:12px;cursor:pointer;">‹ Ant</button>
+              <button onclick="trilhaNext()" style="background:rgba(255,255,255,0.15);border:none;border-radius:20px;padding:6px 12px;color:#fff;font-size:12px;cursor:pointer;">Prox ›</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- LISTA DOS VÍDEOS -->
+        <div class="st">📋 Playlist</div>
+        <div id="trilha-lista"></div>
+
+        <!-- DICA AIRPLAY -->
+        <div class="card" style="margin-top:6px;background:var(--sage-p);border-color:var(--border);">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--sage);margin-bottom:8px;">📺 Como colocar na TV</div>
+          <div style="font-size:13px;color:var(--text-m);line-height:1.8;">
+            1. Conecte iPhone e TV na mesma Wi-Fi<br>
+            2. Toque em Play em qualquer vídeo<br>
+            3. No iPhone: Central de Controle → <strong>AirPlay</strong> → selecione sua TV<br>
+            4. Fique em pé, se mova, deixe as palavras entrarem 🔥
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end content -->
+
+  <!-- FLOAT NAV -->
+  <div class="float-nav">
+    <button class="fn-btn ativo" onclick="goTo('home')" id="fn-home"><span class="fn-ico">🏠</span>Início</button>
+    <button class="fn-btn" onclick="toggleDrawer()"><span class="fn-ico">☰</span>Menu</button>
+  </div>
+
+  <!-- DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">AUREON MENTE</div>
+    <div class="drawer-items">
+      <div class="drawer-item" onclick="goTo('home');closeDrawer()"><div class="di-ico">🏠</div><div><div class="di-name">Início</div><div class="di-sub">Banner · Data · Práticas</div></div></div>
+      <div class="drawer-item" onclick="goTo('metas');closeDrawer()"><div class="di-ico">🎯</div><div><div class="di-name">Metas</div><div class="di-sub">2026 · Era Dourada</div></div></div>
+      <div class="drawer-item" onclick="goTo('mente');closeDrawer()"><div class="di-ico">🧠</div><div><div class="di-name">Mentalidade</div><div class="di-sub">Afirmações · Gratidão · Pilares</div></div></div>
+      <div class="drawer-item" onclick="goTo('conhecimento');closeDrawer()"><div class="di-ico">📚</div><div><div class="di-name">Conhecimento</div><div class="di-sub">Biblioteca · Aprender · Viagens</div></div></div>
+      <div class="drawer-item" onclick="goTo('diario');closeDrawer()"><div class="di-ico">📖</div><div><div class="di-name">Diário</div><div class="di-sub">Gratidão · Reflexão · Intenção</div></div></div>
+      <div class="drawer-item" onclick="goTo('trilha');closeDrawer()"><div class="di-ico">🎬</div><div><div class="di-name">Trilha de Poder</div><div class="di-sub">Afirmações · Gratidão · Vídeos</div></div></div>
+    </div>
+  </div>
+
+</div><!-- end app -->
+
+<!-- SLIDESHOW FULLSCREEN -->
+<div id="quadro-slideshow" style="display:none;position:fixed;inset:0;z-index:500;background:#000;flex-direction:column;">
+  <div class="ss-topbar">
+    <div class="ss-close" onclick="fecharSlideshow()">✕</div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+      <div id="ss-counter" style="font-size:11px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,0.7);text-align:center;">1 / 28</div>
+      <div style="height:3px;background:rgba(255,255,255,0.15);border-radius:3px;overflow:hidden;"><div id="ss-bar" style="height:100%;background:var(--gold-l);border-radius:3px;transition:width .4s;width:0%"></div></div>
+    </div>
+    <div id="ss-zona-tag" style="font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.6);text-transform:uppercase;white-space:nowrap;">AUREON</div>
+  </div>
+  <div id="ss-slides-wrap" style="position:absolute;inset:0;"></div>
+  <div onclick="prevSlide()" class="ss-arrow" style="left:10px;">‹</div>
+  <div onclick="nextSlide()" class="ss-arrow" style="right:10px;">›</div>
+  <div class="ss-bottom">
+    <div class="ss-frase" id="ss-frase-wrap"></div>
+    <div class="ss-ctrl">
+      <button id="ss-music-btn" onclick="abrirMusica()" class="ss-btn">🎵 MÚSICA</button>
+      <button id="ss-pause-btn" onclick="togglePause()" class="ss-btn">⏸ PAUSAR</button>
+      <div id="ss-dots" style="display:flex;gap:5px;align-items:center;"></div>
+      <button onclick="fecharSlideshow()" class="ss-btn">✕ SAIR</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUREON MODAL -->
+<div class="am-overlay" id="am-overlay" onclick="handleAMClick(event)">
+  <div class="am-modal">
+    <button class="am-close" onclick="toggleAureonModal()">✕</button>
+    <img src="https://i.imgur.com/uBLho4p.png" style="width:60px;height:60px;border-radius:14px;object-fit:cover;display:block;margin:0 auto 14px;box-shadow:0 4px 16px rgba(201,168,76,0.3);">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:var(--text);letter-spacing:7px;text-align:center;margin-bottom:4px;">AUREON</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:var(--gold-d);text-align:center;letter-spacing:2px;margin-bottom:18px;">Era Dourada da Minha Vida</div>
+    <div style="width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 18px;"></div>
+    <div class="am-letter gold"><div class="aml-char">A</div><div><div class="aml-word">AUR — Aurum</div><div class="aml-desc">Latim para <em>ouro</em>. O metal mais precioso, símbolo de valor supremo, prosperidade e excelência.</div></div></div>
+    <div class="am-letter"><div class="aml-char">U</div><div><div class="aml-word">AUR — Valor Supremo</div><div class="aml-desc">O subconsciente lê <em>ouro</em> como o padrão mais alto de qualidade, riqueza e realização.</div></div></div>
+    <div class="am-letter gold"><div class="aml-char">E</div><div><div class="aml-word">EON — Aeon</div><div class="aml-desc">Do grego antigo: <em>eternidade</em>, era, grande período de tempo. Algo que dura para sempre.</div></div></div>
+    <div class="am-letter"><div class="aml-char">O</div><div><div class="aml-word">EON — Era</div><div class="aml-desc">Uma era dourada não é um momento — é um <em>período de ouro</em> que se constrói e dura.</div></div></div>
+    <div class="am-letter gold"><div class="aml-char">N</div><div><div class="aml-word">AUREON — Síntese</div><div class="aml-desc"><em>Ouro eterno. Era dourada. Algo monumental e duradouro.</em></div></div></div>
+    <div style="background:var(--gold-p);border:1px solid rgba(201,168,76,0.25);border-radius:14px;padding:14px;text-align:center;margin-top:14px;">
+      <div style="font-size:11px;letter-spacing:2px;color:var(--gold-d);text-transform:uppercase;margin-bottom:6px;">O subconsciente lê AUREON como</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);"><span style="color:var(--gold-d)">Ouro</span> + <span style="color:var(--gold-d)">Poder</span> + <span style="color:var(--gold-d)">Grandiosidade</span> + <span style="color:var(--gold-d)">Algo Monumental</span></div>
+    </div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--text-m);text-align:center;margin-top:14px;line-height:1.6;">Para mim: <strong style="color:var(--sage);font-style:normal;">Era Dourada da Minha Vida</strong></div>
+  </div>
+</div>
+
+<!-- EDIT META MODAL -->
+<div class="edit-overlay" id="edit-overlay" onclick="handleEditClick(event)">
+  <div class="edit-modal">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:14px;" id="edit-modal-title">Editar Meta</div>
+    <textarea class="textarea" id="edit-input" rows="3" style="min-height:70px;margin-bottom:12px;"></textarea>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" style="flex:1;padding:13px;" onclick="salvarEdicaoMeta()">✓ SALVAR</button>
+      <button class="btn" style="padding:13px 16px;background:transparent;border:1.5px solid var(--border);color:var(--text-m);" onclick="fecharEditMeta()">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// STORAGE
+// ============================================================
+function gd(){try{return JSON.parse(localStorage.getItem('aureon_mente')||'{}');}catch{return{};}}
+function sd(d){localStorage.setItem('aureon_mente',JSON.stringify(d));}
+function tk(){const n=new Date();return `${n.getFullYear()}-${n.getMonth()+1}-${n.getDate()}`;}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+const PAGES=['home','metas','mente','conhecimento','diario','trilha'];
+function goTo(p){
+  PAGES.forEach(x=>{const el=document.getElementById('page-'+x);if(el){el.style.display='none';el.classList.remove('ativo');}});
+  const t=document.getElementById('page-'+p);
+  if(t){t.style.display='block';t.classList.add('ativo');}
+  document.getElementById('fn-home').classList.toggle('ativo',p==='home');
+  document.querySelector('.content').scrollTop=0;
+}
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('drawer-overlay');const op=d.classList.contains('open');if(op)closeDrawer();else{d.classList.add('open');o.classList.add('open');}}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('drawer-overlay').classList.remove('open');}
+
+// ============================================================
+// SPLASH
+// ============================================================
+function hideSplash(){const s=document.getElementById('splash');if(!s||s.style.display==='none')return;s.classList.add('hide');setTimeout(()=>{s.style.display='none';},900);}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTm=null;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTm);toastTm=setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ============================================================
+// GREETING + DATE
+// ============================================================
+function updateGreeting(){
+  const n=new Date();const h=n.getHours();
+  const g=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const el=document.getElementById('home-greeting');if(el)el.textContent=`${g}, Jan.`;
+  const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const dias=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+  const df=document.getElementById('home-date');
+  if(df)df.textContent=`${dias[n.getDay()]}, ${n.getDate()} de ${meses[n.getMonth()]} de ${n.getFullYear()}`;
+}
+
+// ============================================================
+// FRASES
+// ============================================================
+const FRASES=[
+  "MEU PRIMEIRO MILHÃO ESTÁ CONQUISTADO. EU SOU MILIONÁRIO!",
+  "EU VIVO EM TOTAL LIBERDADE.",
+  "MEU CORPO É FORTE, DEFINIDO E ELITE.",
+  "O DINHEIRO SE MULTIPLICA PARA MIM.",
+  "MINHA EMPRESA TRABALHA PARA MIM GERANDO LUCROS ALTOS E CRESCENTES.",
+  "EU COMPRO TUDO O QUE EU QUERO.",
+  "EU VIVO COM SAÚDE, RIQUEZA E PROPÓSITO.",
+  "EU SOU A MINHA MELHOR VERSÃO.",
+  "TUDO COOPERA PARA MINHA ASCENSÃO.",
+  "SOU FORTE, CALMO E IMPARÁVEL.",
+  "VIVO EM ABUNDÂNCIA E PROPÓSITO.",
+  "CADA AÇÃO ME APROXIMA DO MEU IMPÉRIO.",
+  "SOU GRATO. SOU ABUNDANTE. SOU AUREON.",
+  "ESTOU CONSTRUINDO A ERA DOURADA DA MINHA VIDA.",
+  "DINHEIRO CRESCE ATÉ MIM TODOS OS DIAS.",
+  "DEZEMBRO 2026 — MILIONÁRIO, LIVRE, REALIZADO.",
+];
+let frIdx=0,frTimer=null;
+function initFrases(){frIdx=Math.floor(Math.random()*FRASES.length);renderFrase();frTimer=setInterval(()=>{frIdx=(frIdx+1)%FRASES.length;renderFrase();},7000);}
+function renderFrase(){
+  const el=document.getElementById('frase-texto');const dots=document.getElementById('frase-dots');
+  if(!el)return;
+  el.style.opacity='0';
+  setTimeout(()=>{el.textContent=FRASES[frIdx];el.style.opacity='1';},300);
+  if(dots){const max=Math.min(FRASES.length,8);dots.innerHTML=Array.from({length:max},(_,i)=>`<div style="width:6px;height:6px;border-radius:50%;background:${i===frIdx%max?'var(--gold)':'rgba(201,168,76,0.22)'};transition:all .3s"></div>`).join('');}
+}
+function nextFrase(){frIdx=(frIdx+1)%FRASES.length;renderFrase();}
+function prevFrase(){frIdx=(frIdx-1+FRASES.length)%FRASES.length;renderFrase();}
+
+// ============================================================
+// 3 PRÁTICAS + ANEL
+// ============================================================
+function renderPraticas(){
+  const d=gd();const key=tk();const done=d.praticas?.[key]||[];
+  const labels={afirm:'Concluídas ✓',grat:'Concluída ✓',vis:'Concluída ✓'};
+  const subs={afirm:'Leia cada afirmação com emoção',grat:'Sinta como se já fosse realidade',vis:'Veja sua vida dos sonhos em detalhes'};
+
+  ['afirm','grat','vis'].forEach(k=>{
+    const isDone=done.includes(k);
+    const card=document.getElementById('pc-'+k);
+    const sub=document.getElementById('pc-'+k+'-sub');
+    const ico=document.getElementById('pc-'+k+'-ico');
+    if(card)card.classList.toggle('done',isDone);
+    if(sub)sub.textContent=isDone?labels[k]:subs[k];
+    if(ico)ico.textContent=isDone?'✓':'›';
+    // Anel tricolor — segmento acende quando concluído
+    const seg=document.getElementById('seg-'+k);
+    if(seg)seg.style.opacity=isDone?'1':'0.2';
+  });
+
+  // Texto central
+  const cnt=done.filter(x=>['afirm','grat','vis'].includes(x)).length;
+  const txt=document.getElementById('ring-count-text');
+  if(txt)txt.textContent=cnt;
+
+  // Score topbar
+  const tb=document.getElementById('tb-score');if(tb)tb.textContent=`${cnt} / 3`;
+}
+
+function renderMiniRing(cnt){
+  const el=document.getElementById('home-ring-mini');if(!el)return;
+  const colors=['#c9a84c','#6a9e6e','#4a6e4e'];
+  const pct=cnt/3;
+  const circ=2*Math.PI*20;
+  const offset=circ-(circ*pct);
+  el.innerHTML=`<svg width="52" height="52" viewBox="0 0 52 52">
+    <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(201,168,76,0.12)" stroke-width="6"/>
+    <circle cx="26" cy="26" r="20" fill="none" stroke="${cnt===3?'var(--sage)':'var(--gold)'}" stroke-width="6"
+      stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"
+      stroke-linecap="round" transform="rotate(-90 26 26)" style="transition:stroke-dashoffset .5s ease"/>
+    <text x="26" y="31" text-anchor="middle" fill="${cnt===3?'var(--sage)':'var(--gold-d)'}" font-size="14" font-family="Cormorant Garamond" font-weight="700">${cnt}/3</text>
+  </svg>`;
+}
+
+function marcarPratica(tipo){
+  const d=gd();const key=tk();
+  if(!d.praticas)d.praticas={};if(!d.praticas[key])d.praticas[key]=[];
+  if(!d.praticas[key].includes(tipo))d.praticas[key].push(tipo);
+  sd(d);renderPraticas();
+  const msgs={afirm:'Afirmações concluídas! 🧠',grat:'Gratidão concluída! 🙏',vis:'Visualização concluída! 🌌'};
+  showToast(msgs[tipo]||'Prática concluída! ✨');
+}
+
+function irPratica(tipo){
+  goTo('mente');
+  const tabMap={afirm:0,grat:1,vis:2};
+  const tabs=document.querySelectorAll('#mente-tabs .tab-btn');
+  const idx=tabMap[tipo]||0;
+  if(tabs[idx])tabs[idx].click();
+}
+
+// ============================================================
+// MENTALIDADE TABS
+// ============================================================
+function switchMente(tab,btn){
+  ['afirm','grat','vis','pilares'].forEach(t=>{const el=document.getElementById('mente-'+t);if(el)el.style.display='none';});
+  const el=document.getElementById('mente-'+tab);if(el)el.style.display='block';
+  document.querySelectorAll('#mente-tabs .tab-btn').forEach(b=>b.classList.remove('ativo'));
+  if(btn)btn.classList.add('ativo');
+}
+function toggleAfirm(el){el.classList.toggle('lida');if(el.classList.contains('lida'))showToast('Sinta isso como verdade ✨');}
+function toggleAnc(el){el.classList.toggle('lida');const c=el.querySelector('.anc-ck');c.textContent=el.classList.contains('lida')?'✓':'';if(el.classList.contains('lida'))showToast('Sinta isso como verdade ✨');}
+function marcarAnc(btn){if(!btn.classList.contains('feito')){btn.classList.add('feito');btn.textContent='✓ MOMENTO CONCLUÍDO';}showToast('Âncora realizada 🙏');}
+function salvarVis(){const d=gd();const key=tk();if(!d.vis)d.vis={};d.vis[key]=document.getElementById('vis-texto')?.value||'';sd(d);marcarPratica('vis');}
+function salvarDiario(){
+  const d=gd();const key=tk();if(!d.diario)d.diario={};
+  d.diario[key]={
+    grat:document.getElementById('d-grat')?.value||'',
+    dia:document.getElementById('d-dia')?.value||'',
+    refl:document.getElementById('d-refl')?.value||'',
+    int:document.getElementById('d-int')?.value||''
+  };
+  sd(d);renderDiarioHistorico();showToast('Diário salvo! 📖');
+}
+
+function renderDiarioHistorico(){
+  const d=gd();const el=document.getElementById('diario-historico');if(!el)return;
+  const entradas=Object.entries(d.diario||{}).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10);
+  if(!entradas.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-l);font-size:13px;">Nenhuma entrada ainda. Escreva sua primeira!</div>';return;}
+  el.innerHTML=entradas.map(([k,v])=>`
+    <div class="card" style="margin-bottom:10px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700;color:var(--gold-d);margin-bottom:10px;letter-spacing:1px;">${k}</div>
+      ${v.grat?`<div style="margin-bottom:8px"><div style="font-size:11px;color:var(--text-l);margin-bottom:3px;">GRATIDÃO</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;">${v.grat}</div></div>`:''}
+      ${v.dia?`<div style="margin-bottom:8px"><div style="font-size:11px;color:var(--text-l);margin-bottom:3px;">MEU DIA</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;">${v.dia}</div></div>`:''}
+      ${v.refl?`<div style="margin-bottom:8px"><div style="font-size:11px;color:var(--text-l);margin-bottom:3px;">REFLEXÃO</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;">${v.refl}</div></div>`:''}
+      ${v.int?`<div><div style="font-size:11px;color:var(--text-l);margin-bottom:3px;">INTENÇÃO</div><div style="font-size:13px;color:var(--text-m);line-height:1.6;">${v.int}</div></div>`:''}
+    </div>`).join('');
+}
+
+// PILARES
+const PILARES=[
+  {n:1,t:'O DESEJO ARDENTE',c:`<p>Napoleon Hill ensina que o desejo ardente não é um simples querer — é uma <strong>obsessão que consome seus pensamentos</strong>. O primeiro passo é transformar um desejo vago em intenção precisa: <em>quanto</em> você quer, <em>o que vai dar em troca</em>, <em>quando</em> vai ter.</p><p>Bob Proctor: <em>"O desejo é o chamado da alma para algo maior."</em> Não existe desejo sem a capacidade de realizá-lo. O fato de você desejar intensamente o milhão é prova de que pode ser seu.</p>`},
+  {n:2,t:'MENTALIDADE DE ABUNDÂNCIA',c:`<p>Escassez e abundância não são realidades externas — são <strong>programas mentais</strong>. Proctor: <em>"O dinheiro está em todo lugar. A questão é: você está sintonizado na frequência dele?"</em></p><p>Quando um pensamento de escassez aparecer — substitua imediatamente: <em>"o dinheiro está fluindo até mim agora"</em>. Não é ilusão. É reprogramação ativa.</p>`},
+  {n:3,t:'FÉ E CONFIANÇA',c:`<p>Hill: <em>"A fé é o eterno elixir que dá vida, poder e ação ao impulso do pensamento."</em> A diferença entre fé e esperança é ação. Esperança espera. Fé age <em>como se</em> já tivesse acontecido.</p><p>Proctor: <em>"Fé não é esperar as coisas aparecerem. É agir com a certeza de que o resultado está a caminho, mesmo sem ver como."</em></p>`},
+  {n:4,t:'CONSISTÊNCIA E PERSISTÊNCIA',c:`<p>Hill: <em>"A maioria das pessoas desiste na véspera do sucesso."</em> Consistência diária constrói o que a motivação esporádica nunca consegue. Motivação é emoção — vai e vem. Consistência é decisão — permanece.</p><p>Para você, Jan: o desafio é provar que consegue mesmo nos dias difíceis. Esses dias moldam o caráter e constroem o império.</p>`},
+  {n:5,t:'VISUALIZAÇÃO CRIATIVA',c:`<p>O subconsciente não distingue o real do vividamente imaginado. Hill: <em>"Tudo que a mente pode conceber e acreditar, ela pode alcançar."</em> Condição: visualização precisa ser carregada de emoção. Imagem sem emoção é fantasia. Com emoção, é instrução ao subconsciente.</p>`},
+  {n:6,t:'AUTOSSUGESTÃO',c:`<p>Canal de comunicação entre a mente consciente e o subconsciente. O subconsciente aceita como verdade aquilo que recebe com <strong>frequência e emoção</strong>. Suas afirmações neste app são instruções precisas enviadas ao seu subconsciente.</p>`},
+  {n:7,t:'AUTOESTIMA E MERECIMENTO',c:`<p>Nenhum homem pode subir mais alto do que a imagem que tem de si mesmo. Proctor: <em>"Você é o resultado de como você se vê."</em> Cuidar do corpo, da aparência, da saúde — não é vaidade. É autoestima em ação.</p>`},
+  {n:8,t:'AÇÃO INSPIRADA',c:`<p>Hill: <em>"O pensamento sem ação é um sonho. A ação sem pensamento é desperdício."</em> Quando uma ideia aparecer durante suas práticas — anote imediatamente e dê o primeiro passo naquele mesmo dia. A janela de uma inspiração é pequena.</p>`},
+  {n:9,t:'GRATIDÃO ANTECIPADA',c:`<p>Gratidão antecipada — ser grato por aquilo que ainda não chegou, mas que você sabe que está a caminho. Isso não é autoengano. É a expressão máxima da fé. Você já agradece antes de receber porque a certeza é tão grande que o agradecimento é natural.</p>`},
+  {n:10,t:'VIBRAÇÕES ALTAS',c:`<p>Tudo vibra — átomos, emoções, pensamentos. Proctor: <em>"Levante sua vibração e o que você quer será magneticamente atraído."</em> Elevadores de vibração: academia, música que energiza, gratidão, afirmações, natureza, pessoas positivas, leitura.</p>`},
+  {n:11,t:'CRENÇAS LIMITANTES',c:`<p>O maior inimigo não está fora — está dentro. Crenças como <em>"dinheiro é difícil"</em> são programações instaladas e aceitas sem questionamento. Proctor: <em>"Se você não está conseguindo o que quer, há uma crença bloqueando."</em></p>`},
+  {n:12,t:'RELAÇÃO COM O DINHEIRO',c:`<p>Dinheiro é neutro. Flui para quem o <strong>entende, respeita, planeja e circula com consciência</strong>. Proctor: <em>"Seu relacionamento com o dinheiro reflete seu relacionamento consigo mesmo."</em></p>`},
+  {n:13,t:'OS 6 PASSOS DE HILL',c:`<p><strong>1.</strong> Defina o valor exato desejado.<br><strong>2.</strong> Determine o que vai dar em troca.<br><strong>3.</strong> Estabeleça uma data definida.<br><strong>4.</strong> Crie um plano e comece <em>imediatamente</em>.<br><strong>5.</strong> Escreva uma declaração clara.<br><strong>6.</strong> Leia em voz alta, duas vezes ao dia, com emoção e fé.</p>`},
+  {n:14,t:'DECLARAÇÃO DE PROPÓSITO',c:`<p>Hill: <em>"Ter um propósito definido é o começo de toda conquista."</em> Proctor: <em>"Seu objetivo deve ser grande o suficiente para assustá-lo e inspirá-lo ao mesmo tempo."</em></p><p>Seu propósito, Jan: Construir liberdade financeira, cuidar de quem ama, ajudar crianças, viver com saúde e presença. Isso é maior que o carro — as conquistas servem esse propósito.</p>`},
+  {n:15,t:'MULTIPLICAÇÃO DA RIQUEZA',c:`<p>Ricos não guardam dinheiro — <strong>multiplicam</strong>. Hill identificou que os grandes realizadores tratavam dinheiro como semente, não como fruto. FIIs para renda mensal, Tesouro para longo prazo, Ações para crescimento. Seu dinheiro deve trabalhar enquanto você dorme.</p>`},
+  {n:16,t:'PLANO DE AÇÃO',c:`<p>Proctor: <em>"Não espere ter tudo planejado para começar. Comece e o plano se revela no processo."</em> Seu plano já existe neste app: metas por período, práticas diárias, hábitos. A única variável é sua ação diária.</p><p><em>Comece hoje. Não amanhã. Hoje.</em></p>`},
+];
+function renderPilares(){const el=document.getElementById('pilares-list');if(!el)return;el.innerHTML=PILARES.map(p=>`<div class="accord"><div class="accord-h" onclick="toggleAccord(this)"><div class="accord-num">${p.n}</div><div class="accord-t">${p.t}</div><div class="accord-ico">▼</div></div><div class="accord-body">${p.c}</div></div>`).join('');}
+function toggleAccord(h){const b=h.nextElementSibling,i=h.querySelector('.accord-ico');b.classList.toggle('open');i.classList.toggle('open');}
+
+// ============================================================
+// AUREON MODAL
+// ============================================================
+function toggleAureonModal(){document.getElementById('am-overlay').classList.toggle('open');}
+function handleAMClick(e){if(e.target===document.getElementById('am-overlay'))toggleAureonModal();}
+
+// ============================================================
+// EDIÇÃO DE METAS
+// ============================================================
+let editTarget=null; // {containerId, rowIndex}
+
+function toggleMeta(el){
+  el.classList.toggle('done');
+  el.querySelector('.mi-check').textContent=el.classList.contains('done')?'✓':'';
+  saveMetas();
+}
+
+function editarMeta(containerId, idx, textoAtual){
+  editTarget={containerId, idx};
+  document.getElementById('edit-modal-title').textContent='Editar Meta';
+  document.getElementById('edit-input').value=textoAtual;
+  document.getElementById('edit-overlay').classList.add('open');
+}
+
+function salvarEdicaoMeta(){
+  if(!editTarget)return;
+  const novoTexto=document.getElementById('edit-input').value.trim();
+  if(!novoTexto){showToast('Digite o texto da meta!');return;}
+  const {containerId, idx}=editTarget;
+  const rows=document.querySelectorAll(`#${containerId} .meta-item-row`);
+  if(rows[idx]){
+    rows[idx].querySelector('.mi-text').textContent=novoTexto;
+    saveMetas();
+  }
+  fecharEditMeta();
+  showToast('Meta atualizada! ✓');
+}
+
+function fecharEditMeta(){
+  document.getElementById('edit-overlay').classList.remove('open');
+  editTarget=null;
+}
+
+function handleEditClick(e){if(e.target===document.getElementById('edit-overlay'))fecharEditMeta();}
+
+function addMeta(containerId){
+  const texto=prompt('Nova meta:');if(!texto)return;
+  const d=gd();if(!d.metas_custom)d.metas_custom={};if(!d.metas_custom[containerId])d.metas_custom[containerId]=[];
+  d.metas_custom[containerId].push({texto,done:false});sd(d);
+  renderMetaRow(document.getElementById(containerId), texto, document.querySelectorAll(`#${containerId} .meta-item-row`).length);
+  showToast('Meta adicionada! 🎯');
+}
+
+function renderMetaRow(container, texto, idx){
+  const row=document.createElement('div');
+  row.className='meta-item-row';
+  row.innerHTML=`<div class="mi-check"></div><div class="mi-text" style="flex:1">${texto}</div><button onclick="editarMeta('${container.id}',${idx},'${texto.replace(/'/g,"\\'")}');event.stopPropagation();" style="background:none;border:none;font-size:14px;color:var(--text-l);cursor:pointer;padding:4px 6px;flex-shrink:0;">✏️</button>`;
+  row.onclick=()=>toggleMeta(row);
+  container.appendChild(row);
+}
+
+// ============================================================
+// APRENDER — EDITÁVEL
+// ============================================================
+const APRENDER_BASE = [
+  {emoji:'🌊', titulo:'Surf', desc:'Aprender a surfar — equilíbrio, coragem, conexão com o mar.'},
+  {emoji:'🏊', titulo:'Natação', desc:'Aprender a nadar — segurança na água, cardio de elite, superação pessoal.'},
+  {emoji:'🗣️', titulo:'Inglês', desc:'Fluência — essencial para os EUA, negócios e vida global.'},
+  {emoji:'🙏', titulo:'Espiritualidade', desc:'Aprofundar a fé, conexão espiritual, práticas de oração e meditação.'},
+];
+
+function renderAprender(){
+  const d=gd();const el=document.getElementById('aprender-lista');if(!el)return;
+  const custom=d.aprender_custom||[];
+  const todos=[...APRENDER_BASE,...custom];
+  el.innerHTML=todos.map((item,i)=>`
+    <div class="card" style="margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;">
+      <div style="font-size:24px;flex-shrink:0">${item.emoji||'📌'}</div>
+      <div style="flex:1">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px">${item.titulo}</div>
+        <div style="font-size:13px;color:var(--text-m);">${item.desc}</div>
+      </div>
+      ${i>=APRENDER_BASE.length?`<button onclick="delAprender(${i-APRENDER_BASE.length})" style="background:none;border:none;font-size:14px;color:var(--text-l);cursor:pointer;padding:4px;">✕</button>`:''}
+    </div>`).join('');
+}
+
+function addAprender(){
+  const titulo=prompt('O que quer aprender?');if(!titulo)return;
+  const desc=prompt('Descreva (opcional):');
+  const d=gd();if(!d.aprender_custom)d.aprender_custom=[];
+  d.aprender_custom.push({emoji:'📌',titulo,desc:desc||''});
+  sd(d);renderAprender();showToast('Adicionado! 🌱');
+}
+
+function delAprender(idx){
+  const d=gd();if(!d.aprender_custom)return;
+  d.aprender_custom.splice(idx,1);sd(d);renderAprender();
+}
+
+// ============================================================
+// BUCKET LIST — EDITÁVEL
+// ============================================================
+const VIAGENS_BASE=[
+  {n:'New York',f:'🇺🇸'},{n:'California',f:'🇺🇸'},{n:'Las Vegas',f:'🇺🇸'},
+  {n:'Espanha',f:'🇪🇸'},{n:'Bélgica',f:'🇧🇪'},{n:'Grécia',f:'🇬🇷'},
+  {n:'Itália',f:'🇮🇹'},{n:'França',f:'🇫🇷'},{n:'Alemanha',f:'🇩🇪'},
+  {n:'Islândia',f:'🇮🇸'},{n:'Chile',f:'🇨🇱'},{n:'Porto Rico',f:'🇵🇷'},
+  {n:'Bahamas',f:'🇧🇸'},{n:'Ilhas Maurício',f:'🇲🇺'},{n:'Suíça',f:'🇨🇭'},
+  {n:'Noruega',f:'🇳🇴'},{n:'Dinamarca',f:'🇩🇰'},{n:'Tailândia',f:'🇹🇭'},
+  {n:'Japão',f:'🇯🇵'},{n:'China',f:'🇨🇳'},{n:'África do Sul',f:'🇿🇦'},
+];
+
+function renderViagens(){
+  const d=gd();const vis=d.viagens||[];const custom=d.viagens_custom||[];
+  const todos=[...VIAGENS_BASE.map((v,i)=>({...v,isBase:true,idx:i})),...custom.map((v,i)=>({...v,isBase:false,idx:i}))];
+  const el=document.getElementById('viagens-lista');if(!el)return;
+  const total=todos.length;const visitados=vis.length;
+  el.innerHTML=`<div style="padding:4px 0">
+    ${todos.map((v,gi)=>`
+      <div class="viagem-item ${vis.includes(gi)?'ok':''}" style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="toggleViagem(${gi})">
+        <div style="font-size:24px;">${v.f||'📍'}</div>
+        <div style="flex:1;font-size:14px;color:${vis.includes(gi)?'var(--gold-d)':'var(--text)'};font-weight:${vis.includes(gi)?'600':'400'}">${v.n}</div>
+        <div style="width:24px;height:24px;border-radius:7px;border:2px solid ${vis.includes(gi)?'var(--gold)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:12px;background:${vis.includes(gi)?'var(--gold)':'transparent'};color:${vis.includes(gi)?'#fff':'transparent'}">${vis.includes(gi)?'✓':''}</div>
+        ${!v.isBase?`<button onclick="delViagem(${v.idx});event.stopPropagation();" style="background:none;border:none;font-size:13px;color:var(--text-l);cursor:pointer;padding:2px 4px;">✕</button>`:''}
+      </div>`).join('')}
+    <div style="text-align:center;padding:12px 0;font-size:12px;color:var(--text-l)">${visitados} de ${total} destinos conquistados</div>
+  </div>`;
+}
+
+function toggleViagem(i){
+  const d=gd();if(!d.viagens)d.viagens=[];
+  const idx=d.viagens.indexOf(i);
+  if(idx>-1)d.viagens.splice(idx,1);
+  else{d.viagens.push(i);const todos=[...VIAGENS_BASE,...(d.viagens_custom||[])];showToast(`${todos[i]?.f||'📍'} ${todos[i]?.n||''} conquistado! ✈️`);}
+  sd(d);renderViagens();
+}
+
+function addViagem(){
+  const nome=prompt('Destino:');if(!nome)return;
+  const flag=prompt('Bandeira (emoji):') || '📍';
+  const d=gd();if(!d.viagens_custom)d.viagens_custom=[];
+  d.viagens_custom.push({n:nome,f:flag});sd(d);renderViagens();showToast('Destino adicionado! ✈️');
+}
+
+function delViagem(idx){
+  const d=gd();if(!d.viagens_custom)return;
+  d.viagens_custom.splice(idx,1);sd(d);renderViagens();
+}
+
+// ============================================================
+// MÚSICA DO SLIDESHOW — Audio Element (funciona no iOS)
+// ============================================================
+// Jan: quando tiver o MP3, sobe no Google Drive e substitui este ID:
+const MUSICA_DRIVE_ID = 'SEU_MP3_ID_AQUI';
+let audioEl = null;
+let musicaSlideshow = false;
+
+function iniciarAudioSlideshow() {
+  // Cria elemento de audio se não existe
+  if (!audioEl) {
+    audioEl = document.createElement('audio');
+    audioEl.loop = true;
+    audioEl.volume = 0.6;
+    // Usa Google Drive se tiver ID configurado, senão placeholder
+    if (MUSICA_DRIVE_ID !== 'SEU_MP3_ID_AQUI') {
+      audioEl.src = `https://drive.google.com/uc?export=download&id=${MUSICA_DRIVE_ID}`;
+    }
+    document.body.appendChild(audioEl);
+  }
+}
+
+function toggleMusica() {
+  iniciarAudioSlideshow();
+  const btn = document.getElementById('ss-music-btn');
+  if (!audioEl.src || MUSICA_DRIVE_ID === 'SEU_MP3_ID_AQUI') {
+    showToast('🎵 Adicione o link do MP3 em breve!');
+    return;
+  }
+  if (musicaSlideshow) {
+    audioEl.pause();
+    musicaSlideshow = false;
+    if (btn) { btn.textContent = '🎵 MÚSICA'; btn.style.background = 'rgba(255,255,255,0.15)'; }
+  } else {
+    audioEl.play().then(() => {
+      musicaSlideshow = true;
+      if (btn) { btn.textContent = '🔇 PAUSAR'; btn.style.background = 'rgba(201,168,76,0.4)'; }
+    }).catch(() => {
+      showToast('Toque novamente para ativar a música');
+    });
+  }
+}
+
+function pararMusica() {
+  if (audioEl) { audioEl.pause(); audioEl.currentTime = 0; }
+  musicaSlideshow = false;
+  const btn = document.getElementById('ss-music-btn');
+  if (btn) { btn.textContent = '🎵 MÚSICA'; btn.style.background = 'rgba(255,255,255,0.15)'; }
+}
+
+function abrirMusica() { toggleMusica(); }
+
+// ============================================================
+// METAS — SAVE / LOAD
+// ============================================================
+function saveMetas(){
+  const d=gd();if(!d.metas_done)d.metas_done={};
+  ['metas-maio','metas-agosto','metas-dezembro'].forEach(id=>{
+    const rows=document.querySelectorAll(`#${id} .meta-item-row`);
+    d.metas_done[id]=Array.from(rows).map(r=>({done:r.classList.contains('done'),texto:r.querySelector('.mi-text')?.textContent||''}));
+  });sd(d);
+}
+function loadMetas(){
+  const d=gd();if(!d.metas_done)return;
+  ['metas-maio','metas-agosto','metas-dezembro'].forEach(id=>{
+    const states=d.metas_done[id]||[];
+    const rows=document.querySelectorAll(`#${id} .meta-item-row`);
+    rows.forEach((r,i)=>{
+      if(states[i]?.done){r.classList.add('done');r.querySelector('.mi-check').textContent='✓';}
+    });
+  });
+  adicionarBotoesEditar();
+}
+function adicionarBotoesEditar(){
+  ['metas-maio','metas-agosto','metas-dezembro'].forEach(id=>{
+    const rows=document.querySelectorAll(`#${id} .meta-item-row`);
+    rows.forEach((r,i)=>{
+      if(!r.querySelector('.meta-edit-btn')){
+        const textoEl=r.querySelector('.mi-text');
+        const btn=document.createElement('button');
+        btn.className='meta-edit-btn';
+        btn.textContent='✏️';
+        btn.style.cssText='background:none;border:none;font-size:13px;color:var(--text-l);cursor:pointer;padding:4px 6px;flex-shrink:0;';
+        btn.onclick=(e)=>{e.stopPropagation();editarMeta(id,i,textoEl?.textContent||'');};
+        r.appendChild(btn);
+      }
+    });
+  });
+}
+
+function switchConhec(tab,btn){['biblioteca','aprender','bucket'].forEach(t=>{const el=document.getElementById('conhec-'+t);if(el)el.style.display='none';});const el=document.getElementById('conhec-'+tab);if(el)el.style.display='block';document.querySelectorAll('#conhec-tabs .tab-btn').forEach(b=>b.classList.remove('ativo'));if(btn)btn.classList.add('ativo');}
+
+// BIBLIOTECA
+const LIVROS_BASE=[
+  {id:'napoleon',o:1,t:'Quem Pensa Enriquece — O Legado',a:'Napoleon Hill',tipo:'mine',xp:150,why:'<strong>Comece por esse.</strong> O mecanismo exato da manifestação, do desejo ardente e da fé aplicada. Releia agora com os olhos de quem está reconstruindo.',wt:'gold-why'},
+  {id:'dispenza',o:2,t:'Você É o Placebo',a:'Dr. Joe Dispenza',tipo:'mine',xp:150,why:'<strong>Leia segundo.</strong> Explica cientificamente por que suas afirmações e visualizações funcionam. Vai turbinar suas práticas.',wt:''},
+  {id:'ferriss',o:3,t:'Trabalhe 4 Horas por Semana',a:'Timothy Ferriss',tipo:'mine',xp:120,why:'<strong>Leia terceiro.</strong> Empresa que trabalha pra você, liberdade de tempo, viajar. Ferramentas práticas para estruturar o negócio.',wt:''},
+  {id:'eker',o:4,t:'Segredos da Mente Milionária',a:'T. Harv Eker',tipo:'ind',xp:120,why:'Mentalidade financeira e como reprogramar seu "termostato financeiro" para riqueza.',wt:'gold-why'},
+  {id:'habito',o:5,t:'O Poder do Hábito',a:'Charles Duhigg',tipo:'ind',xp:120,why:'Por que você procrastina e como criar novos padrões permanentes.',wt:''},
+  {id:'obstaculo',o:6,t:'O Obstáculo É o Caminho',a:'Ryan Holiday',tipo:'ind',xp:100,why:'Filosofia estoica aplicada aos negócios. Cada adversidade tem um propósito.',wt:''},
+];
+function renderBiblioteca(){const d=gd();const lidos=d.livros_lidos||[];const lendo=d.livros_lendo||[];const custom=d.livros_custom||[];const todos=[...LIVROS_BASE,...custom];const el=document.getElementById('biblioteca-lista');if(!el)return;el.innerHTML=todos.map(l=>{const isLido=lidos.includes(l.id);const isLendo=lendo.includes(l.id);return `<div class="book-card ${isLido?'lido':isLendo?'lendo':''}" id="bk-${l.id}"><div class="book-head"><div class="book-ord">${isLido?'✓':(l.o||'+')}</div><div class="book-info"><div class="book-title">${l.t}</div><div class="book-author">${l.a}</div><div class="book-tags">${l.tipo==='mine'?'<span class="btag btag-mine">Meu livro</span>':'<span class="btag btag-ind">Indicação</span>'}<span class="btag btag-xp">+${l.xp||80} XP</span></div></div></div><div class="book-body"><div class="book-why ${l.wt||''}">${l.why||''}</div><div class="book-actions"><button class="btn-lendo ${isLendo?'ativo':''}" onclick="toggleLendo('${l.id}')">${isLendo?'📖 Lendo':'📖 Ler agora'}</button><button class="btn-lido ${isLido?'ativo':''}" onclick="toggleLido('${l.id}')">${isLido?'✓ Lido':'✅ Marcar lido'}</button></div></div></div>`;}).join('');}
+function toggleLendo(id){const d=gd();if(!d.livros_lendo)d.livros_lendo=[];d.livros_lidos=(d.livros_lidos||[]).filter(x=>x!==id);const idx=d.livros_lendo.indexOf(id);if(idx>-1)d.livros_lendo.splice(idx,1);else d.livros_lendo.push(id);sd(d);renderBiblioteca();showToast('Boa leitura! 📖');}
+function toggleLido(id){const d=gd();if(!d.livros_lidos)d.livros_lidos=[];d.livros_lendo=(d.livros_lendo||[]).filter(x=>x!==id);const idx=d.livros_lidos.indexOf(id);if(idx>-1)d.livros_lidos.splice(idx,1);else{d.livros_lidos.push(id);showToast('+XP! Livro concluído! 🎉');}sd(d);renderBiblioteca();}
+function toggleAddLivro(){document.getElementById('add-livro-form').style.display=document.getElementById('add-livro-form').style.display==='none'?'block':'none';}
+function addLivro(){const t=document.getElementById('livro-titulo')?.value.trim();if(!t){showToast('Digite o título!');return;}const d=gd();if(!d.livros_custom)d.livros_custom=[];d.livros_custom.push({id:'c_'+Date.now(),t,a:document.getElementById('livro-autor')?.value.trim()||'',why:document.getElementById('livro-why')?.value.trim()||'',tipo:'mine',xp:80,wt:''});sd(d);renderBiblioteca();document.getElementById('add-livro-form').style.display='none';showToast('Livro adicionado! 📚');}
+
+// BUCKET LIST
+const VIAGENS=[{n:'New York',f:'🇺🇸'},{n:'California',f:'🇺🇸'},{n:'Las Vegas',f:'🇺🇸'},{n:'Espanha',f:'🇪🇸'},{n:'Bélgica',f:'🇧🇪'},{n:'Grécia',f:'🇬🇷'},{n:'Itália',f:'🇮🇹'},{n:'França',f:'🇫🇷'},{n:'Alemanha',f:'🇩🇪'},{n:'Islândia',f:'🇮🇸'},{n:'Chile',f:'🇨🇱'},{n:'Porto Rico',f:'🇵🇷'},{n:'Bahamas',f:'🇧🇸'},{n:'Ilhas Maurício',f:'🇲🇺'},{n:'Suíça',f:'🇨🇭'},{n:'Noruega',f:'🇳🇴'},{n:'Dinamarca',f:'🇩🇰'},{n:'Tailândia',f:'🇹🇭'},{n:'Japão',f:'🇯🇵'},{n:'China',f:'🇨🇳'},{n:'África do Sul',f:'🇿🇦'}];
+function renderViagens(){const d=gd();const vis=d.viagens||[];const el=document.getElementById('viagens-lista');if(!el)return;el.innerHTML=`<div style="padding:4px 0">${VIAGENS.map((v,i)=>`<div class="viagem-item ${vis.includes(i)?'ok':''}" onclick="toggleViagem(${i})"><div class="vi-flag">${v.f}</div><div class="vi-nome">${v.n}</div><div class="vi-ck">${vis.includes(i)?'✓':''}</div></div>`).join('')}<div style="text-align:center;padding:12px 0;font-size:12px;color:var(--text-l)">${vis.length} de ${VIAGENS.length} destinos conquistados</div></div>`;}
+function toggleViagem(i){const d=gd();if(!d.viagens)d.viagens=[];const idx=d.viagens.indexOf(i);if(idx>-1)d.viagens.splice(idx,1);else{d.viagens.push(i);showToast(`${VIAGENS[i].f} ${VIAGENS[i].n} conquistado! ✈️`);}sd(d);renderViagens();}
+
+// ============================================================
+// QUADRO DOS SONHOS — SLIDESHOW
+// ============================================================
+const ZONAS=[
+  {id:'abertura',nome:'ABERTURA',slides:[{img:'https://i.imgur.com/dO4Qsxy.jpeg',tipo:'abertura'}]},
+  {id:'riqueza',nome:'RIQUEZA',slides:[
+    {img:'https://i.imgur.com/My64TWl.jpeg',zona:'RIQUEZA',frase:'Sou feliz e grato por ter <em>mais de R$1.000.000</em> — minha riqueza cresce todos os dias.'},
+    {img:'https://i.imgur.com/j3SprFL.jpeg',zona:'RIQUEZA',frase:'Sou feliz e grato por trabalhar com <em>leveza e liberdade</em>, vendo meus lucros grandiosos chegarem.'},
+    {img:'https://i.imgur.com/GbR4WzI.png',zona:'RIQUEZA',frase:'Sou feliz e grato que hoje eu moro no meu apartamento de forma confortável em <em>Fort Lauderdale</em>.'},
+    {img:'https://i.imgur.com/pUJTZRS.png',zona:'RIQUEZA',frase:'Sou feliz e grato que hoje dirijo minha <em>BMW Alpina XB7</em> com alegria e orgulho da minha conquista.'},
+    {img:'https://i.imgur.com/c1piXEP.jpeg',zona:'RIQUEZA',frase:'Sou feliz e grato por <em>viver com liberdade e estilo</em>.'},
+    {img:'https://i.imgur.com/aVQyFDo.jpeg',zona:'RIQUEZA',frase:'Sou feliz e grato por ter dinheiro para <em>adquirir tudo que desejo</em>.'},
+  ]},
+  {id:'corpo',nome:'CORPO',slides:[
+    {img:'https://i.imgur.com/1nsXfZq.jpeg',zona:'CORPO',frase:'Sou feliz e grato pelo meu <em>corpo forte, definido e saudável</em>.'},
+    {img:'https://i.imgur.com/IeyanGp.jpeg',zona:'CORPO',frase:'Sou feliz e grato por me <em>dedicar à academia</em> com prazer.'},
+    {img:'https://i.imgur.com/3cQ944U.jpeg',zona:'CORPO',frase:'Sou feliz e grato por me sentir <em>bonito, confiante e atraente</em>.'},
+    {img:'https://i.imgur.com/ugGjPJu.jpeg',zona:'CORPO',frase:'Sou feliz e grato por me <em>priorizar e me cuidar</em>.'},
+    {img:'https://i.imgur.com/mLVzEhB.jpeg',zona:'CORPO',frase:'Sou feliz e grato por escolher o que me faz bem.'},
+    {img:'https://i.imgur.com/o5RBdll.jpeg',zona:'CORPO',frase:'Sou feliz e grato por me apresentar com <em>elegância e confiança</em>.'},
+  ]},
+  {id:'empresa',nome:'EMPRESA',slides:[
+    {img:'https://i.imgur.com/ag6AJA7.jpeg',zona:'EMPRESA',frase:'Sou feliz e grato pelo <em>sucesso extraordinário</em> da minha empresa.'},
+    {img:'https://i.imgur.com/0M9FHMT.jpeg',zona:'EMPRESA',frase:'Sou feliz e grato porque <em>minha empresa trabalha para mim</em>.'},
+    {img:'https://i.imgur.com/8aJb7Af.jpeg',zona:'EMPRESA',frase:'Sou feliz e grato por trabalhar de onde quiser, <em>beira-mar, com liberdade total</em>.'},
+    {img:'https://i.imgur.com/OuAhU9M.jpeg',zona:'EMPRESA',frase:'Sou feliz e grato pela minha <em>mente poderosa e produtiva</em>.'},
+  ]},
+  {id:'viagens',nome:'VIAGENS',slides:[
+    {img:'https://i.imgur.com/Va6CdFK.jpeg',zona:'VIAGENS',frase:'Sou feliz e grato por <em>viajar sempre que quero</em>.'},
+    {img:'https://i.imgur.com/SNQst51.jpeg',zona:'VIAGENS',frase:'Sou feliz e grato por <em>realizar todos os destinos</em> da minha bucket list.'},
+    {img:'https://i.imgur.com/3EO64jl.jpeg',zona:'VIAGENS',frase:'Sou feliz e grato por levar minha mãe para ver a <em>Aurora Boreal na Islândia</em>.'},
+    {img:'https://i.imgur.com/GUtKumj.jpeg',zona:'VIAGENS',frase:'Sou feliz e grato por caminhar por <em>Fort Lauderdale como um homem realizado</em>.'},
+  ]},
+  {id:'vida',nome:'VIDA',slides:[
+    {img:'https://i.imgur.com/sVRKyMx.jpeg',zona:'VIDA',frase:'Sou feliz e grato por desfrutar de <em>lazer com leveza</em>.'},
+    {img:'https://i.imgur.com/g1hpZUY.jpeg',zona:'VIDA',frase:'Sou feliz e grato por ter <em>tempo e disposição</em> para viver com plenitude.'},
+    {img:'https://i.imgur.com/89uhhL8.jpeg',zona:'VIDA',frase:'Sou feliz e grato por <em>viver sem limites</em>.'},
+    {img:'https://i.imgur.com/3fnDYKM.jpeg',zona:'VIDA',frase:'Sou feliz e grato por <em>aprender e crescer</em> continuamente.'},
+    {img:'https://i.imgur.com/eZGKmbe.jpeg',zona:'VIDA',frase:'Sou feliz e grato por <em>surfar nas ondas da vida</em> com equilíbrio.'},
+  ]},
+  {id:'proposito',nome:'PROPÓSITO',slides:[
+    {img:'https://i.imgur.com/yYV2LFx.png',zona:'TRANSFORMAÇÃO',frase:'Sou feliz e grato pela minha <em>transformação completa</em>.'},
+    {img:'https://i.imgur.com/9RC1E3K.jpeg',zona:'PROPÓSITO',frase:'Sou feliz e grato por oferecer aos meus pais <em>o melhor cuidado</em>.'},
+  ]},
+  {id:'fechamento',nome:'DECRETO',slides:[{img:'https://i.imgur.com/1nsXfZq.jpeg',tipo:'fechamento'}]},
+];
+
+let qSlides=[],qIdx=0,qPausado=false,qTimer=null;
+let musicaAtiva=false;
+const YT_IDS=['SBjQ9tuuTJQ','cCxGOHd5lB4','GKPZ0iAFfQo'];
+
+function abrirSlideshow(){
+  qSlides=[];ZONAS.forEach(z=>z.slides.forEach(s=>qSlides.push({...s,zonaName:z.nome})));
+  qIdx=0;qPausado=false;
+  renderSSSlides();
+  const el=document.getElementById('quadro-slideshow');if(el)el.style.display='flex';
+  mostrarSlide(0);
+  startSSAuto();
+  musicaAtiva=false;
+  atualizarBtnMusica();
+}
+
+function renderSSSlides(){
+  const wrap=document.getElementById('ss-slides-wrap');if(!wrap)return;
+  wrap.innerHTML=qSlides.map((s,i)=>{
+    if(s.tipo==='abertura')return `<div class="qsl" id="qsl-${i}" style="position:absolute;inset:0;opacity:0;transition:opacity .7s;"><img src="${s.img}" style="width:100%;height:100%;object-fit:cover;"><div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);"></div><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;"><div style="font-size:11px;letter-spacing:5px;color:rgba(201,168,76,0.8);text-transform:uppercase;margin-bottom:12px;">Quadro dos Sonhos</div><div style="font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;color:#fff;letter-spacing:4px;line-height:.95;margin-bottom:12px;">JAN<br><span style="color:var(--gold-l)">ZAMPIER</span></div><div style="width:50px;height:1px;background:rgba(201,168,76,0.5);margin:12px auto;"></div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:rgba(255,255,255,0.85);">Era Dourada da Minha Vida</div></div></div>`;
+    if(s.tipo==='fechamento')return `<div class="qsl" id="qsl-${i}" style="position:absolute;inset:0;opacity:0;transition:opacity .7s;"><img src="${s.img}" style="width:100%;height:100%;object-fit:cover;"><div style="position:absolute;inset:0;background:rgba(0,0,0,0.72);"></div><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;overflow-y:auto;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:3px;margin-bottom:16px;">ERA DOURADA</div><div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:rgba(255,255,255,0.9);line-height:1.9;max-width:440px;border:1px solid rgba(201,168,76,0.35);border-radius:14px;padding:18px 22px;background:rgba(201,168,76,0.07);margin-bottom:18px;">"Eu, <span style="color:var(--gold-l);font-style:normal;font-weight:600;">Jan Zampier</span>, decreto que minha <span style="color:var(--gold-l);font-style:normal;font-weight:600;">Era Dourada</span> já começou.<br><br>Sou saudável, rico, livre e realizado.<br>Minha empresa prospera. Meu corpo é forte.<br>João Pessoa beira-mar. Fort Lauderdale definitivo.<br><br><span style="color:var(--gold-l);font-style:normal;font-weight:600;">Isso é real. Isso já é meu.</span>"</div><button onclick="fecharSlideshow()" style="padding:14px 30px;border-radius:30px;background:var(--sage);border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;color:#fff;cursor:pointer;">✓ EU ACREDITO E RECEBO</button></div></div>`;
+    return `<div class="qsl" id="qsl-${i}" style="position:absolute;inset:0;opacity:0;transition:opacity .7s;"><img src="${s.img}" style="width:100%;height:100%;object-fit:cover;"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.02) 0%,rgba(0,0,0,0) 35%,rgba(0,0,0,0.5) 75%,rgba(0,0,0,0.85) 100%);"></div></div>`;
+  }).join('');
+}
+
+function mostrarSlide(idx){
+  document.querySelectorAll('.qsl').forEach(s=>{s.style.opacity='0';s.style.zIndex='1';});
+  const s=document.getElementById('qsl-'+idx);if(s){s.style.opacity='1';s.style.zIndex='2';}
+  const total=qSlides.length;
+  const counter=document.getElementById('ss-counter');const bar=document.getElementById('ss-bar');
+  const zona=document.getElementById('ss-zona-tag');const pb=document.getElementById('ss-pause-btn');
+  if(counter)counter.textContent=`${idx+1} / ${total}`;
+  if(bar)bar.style.width=`${((idx+1)/total)*100}%`;
+  if(zona&&qSlides[idx])zona.textContent=qSlides[idx].zonaName||'AUREON';
+  if(pb)pb.textContent=qPausado?'▶ CONTINUAR':'⏸ PAUSAR';
+  const fw=document.getElementById('ss-frase-wrap');
+  if(fw){const sl=qSlides[idx];if(sl&&sl.frase&&!sl.tipo){fw.innerHTML=`<div style="font-size:10px;font-weight:700;letter-spacing:3px;color:var(--gold-l);text-transform:uppercase;margin-bottom:5px;">${sl.zona||''}</div><div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;font-style:italic;color:#fff;line-height:1.45;text-shadow:0 2px 16px rgba(0,0,0,0.5);">${sl.frase}</div>`;}else{fw.innerHTML='';}}
+  const dots=document.getElementById('ss-dots');if(dots){const max=Math.min(total,7);dots.innerHTML=Array.from({length:max},(_,i)=>{const on=Math.round((idx/Math.max(total-1,1))*(max-1))===i;return `<div style="width:6px;height:6px;border-radius:50%;background:${on?'var(--gold-l)':'rgba(255,255,255,0.3)'};transition:all .3s;${on?'transform:scale(1.4)':''}"></div>`;}).join('');}
+}
+function nextSlide(){if(qIdx<qSlides.length-1){qIdx++;mostrarSlide(qIdx);if(!qPausado)resetSSAuto();}else pausarSS();}
+function prevSlide(){if(qIdx>0){qIdx--;mostrarSlide(qIdx);if(!qPausado)resetSSAuto();}}
+function startSSAuto(){clearInterval(qTimer);if(!qPausado)qTimer=setInterval(()=>{if(!qPausado)nextSlide();},8000);}
+function resetSSAuto(){clearInterval(qTimer);startSSAuto();}
+function pausarSS(){qPausado=true;clearInterval(qTimer);const b=document.getElementById('ss-pause-btn');if(b)b.textContent='▶ CONTINUAR';}
+function retomarSS(){qPausado=false;const b=document.getElementById('ss-pause-btn');if(b)b.textContent='⏸ PAUSAR';startSSAuto();}
+function togglePause(){if(qPausado)retomarSS();else pausarSS();}
+function fecharSlideshow(){clearInterval(qTimer);const el=document.getElementById('quadro-slideshow');if(el)el.style.display='none';pararMusica();}
+
+function toggleMusica(){
+  if(musicaAtiva){
+    pararMusica();
+  } else {
+    iniciarMusica();
+  }
+}
+
+function iniciarMusica(){
+  let wrap=document.getElementById('yt-music-wrap');
+  if(!wrap){
+    wrap=document.createElement('div');
+    wrap.id='yt-music-wrap';
+    wrap.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0.01;pointer-events:none;';
+    document.body.appendChild(wrap);
+  }
+  // Remove iframe anterior
+  wrap.innerHTML='';
+  const iframe=document.createElement('iframe');
+  iframe.id='yt-music-iframe';
+  iframe.width='1';iframe.height='1';
+  iframe.allow='autoplay';
+  iframe.src=`https://www.youtube.com/embed/${YT_IDS[0]}?autoplay=1&mute=0&loop=1&playlist=${YT_IDS.join(',')}&controls=0&rel=0`;
+  wrap.appendChild(iframe);
+  musicaAtiva=true;
+  atualizarBtnMusica();
+  showToast('🎵 Música ativada!');
+}
+
+function pararMusica(){
+  const wrap=document.getElementById('yt-music-wrap');
+  if(wrap)wrap.innerHTML='';
+  musicaAtiva=false;
+  atualizarBtnMusica();
+}
+
+function atualizarBtnMusica(){
+  const btn=document.getElementById('ss-music-btn');
+  if(btn){
+    btn.textContent=musicaAtiva?'🔇 MÚSICA':'🎵 MÚSICA';
+    btn.style.background=musicaAtiva?'rgba(201,168,76,0.4)':'rgba(255,255,255,0.15)';
+  }
+}
+
+// Touch/keyboard
+let _tx=0;
+document.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const el=document.getElementById('quadro-slideshow');if(!el||el.style.display==='none')return;const diff=_tx-e.changedTouches[0].clientX;if(Math.abs(diff)>45){if(diff>0)nextSlide();else prevSlide();}},{passive:true});
+document.addEventListener('keydown',e=>{const el=document.getElementById('quadro-slideshow');if(!el||el.style.display==='none')return;if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nextSlide();}if(e.key==='ArrowLeft'){e.preventDefault();prevSlide();}if(e.key==='Escape')fecharSlideshow();});
+
+// ============================================================
+// TRILHA DE PODER
+// ============================================================
+const TRILHA_VIDEOS = [
+  {
+    id: '_qWqFkiCos4',
+    titulo: '🎙️ Afirmações',
+    duracao: 'Parte 1',
+    desc: 'Afirmações de poder, identidade e prosperidade',
+    type: 'youtube'
+  },
+  {
+    id: '8aoB_oWoK48',
+    titulo: '🙏 Gratidão Antecipada 01',
+    duracao: 'Parte 2',
+    desc: 'Gratidão antecipada pela Era Dourada',
+    type: 'youtube'
+  },
+  {
+    id: 'QIkttVtEkpU',
+    titulo: '⚡ Gratidão Antecipada 02',
+    duracao: 'Parte 3',
+    desc: 'Sequência completa de gratidão antecipada',
+    type: 'youtube'
+  },
+  {
+    id: '1zGBsoxuZK8TKNoSHFiKgUyRuTa-0nmq7',
+    titulo: '🌅 Ritual Matinal',
+    duracao: 'Ritual',
+    desc: 'Conscientização master ao acordar',
+    type: 'drive'
+  },
+];
+
+let trilhaIdx = 0;
+
+function renderTrilhaLista() {
+  const el = document.getElementById('trilha-lista');
+  if (!el) return;
+  el.innerHTML = TRILHA_VIDEOS.map((v, i) => `
+    <div onclick="playTrilha(${i})" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px var(--sh);" id="trilha-item-${i}">
+      <div style="width:48px;height:48px;border-radius:12px;background:${i===0?'var(--sage)':'var(--sage-p)'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;color:${i===0?'#fff':'var(--sage)'};">
+        ${i===trilhaIdx&&document.getElementById('trilha-player-wrap')?.style.display!=='none'?'▶':'▷'}
+      </div>
+      <div style="flex:1;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:var(--text);">${v.titulo}</div>
+        <div style="font-size:11px;color:var(--text-l);margin-top:2px;">${v.desc}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-l);font-weight:600;">${v.duracao}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// RITUAL MATINAL
+// ============================================================
+const RITUAL_DRIVE_ID = '1zGBsoxuZK8TKNoSHFiKgUyRuTa-0nmq7';
+let ritualAberto = false;
+
+function toggleRitual() {
+  const player = document.getElementById('ritual-player');
+  const video = document.getElementById('ritual-video');
+  const btn = document.getElementById('ritual-toggle-btn');
+  if (!ritualAberto) {
+    player.style.display = 'block';
+    btn.textContent = '✕ FECHAR';
+    btn.style.background = 'rgba(74,110,78,0.12)';
+    btn.style.color = 'var(--sage)';
+    ritualAberto = true;
+    setTimeout(() => {
+      player.scrollIntoView({behavior:'smooth', block:'center'});
+      if (video) video.play().catch(()=>{});
+    }, 150);
+  } else {
+    if (video) { video.pause(); video.currentTime = 0; }
+    player.style.display = 'none';
+    btn.textContent = '▶ ASSISTIR';
+    btn.style.background = 'linear-gradient(135deg,var(--sage),var(--sage-m))';
+    btn.style.color = '#fff';
+    ritualAberto = false;
+  }
+}
+
+function getVideoSrc(video) {
+  if (video.type === 'drive') {
+    return `https://drive.google.com/file/d/${video.id}/preview`;
+  }
+  return `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+}
+
+function playTrilha(idx) {
+  trilhaIdx = idx;
+  const v = TRILHA_VIDEOS[idx];
+  if (!v) return;
+
+  const wrap = document.getElementById('trilha-player-wrap');
+  const ytWrap = document.getElementById('trilha-yt-wrap');
+  const iframe = document.getElementById('trilha-iframe');
+  const videoNative = document.getElementById('trilha-video-native');
+  const videoSrc = document.getElementById('trilha-video-src');
+  const titulo = document.getElementById('trilha-titulo-atual');
+
+  if (!wrap) return;
+  wrap.style.display = 'block';
+  if (titulo) titulo.textContent = v.titulo;
+
+  if (v.type === 'drive') {
+    // Usa video nativo para Google Drive
+    if (ytWrap) ytWrap.style.display = 'none';
+    if (iframe) iframe.src = '';
+    if (videoSrc) videoSrc.src = `https://drive.google.com/uc?export=download&id=${v.id}`;
+    if (videoNative) {
+      videoNative.style.display = 'block';
+      videoNative.load();
+      videoNative.play().catch(()=>{});
+    }
+  } else {
+    // Usa iframe para YouTube
+    if (videoNative) { videoNative.pause(); videoNative.style.display = 'none'; }
+    if (ytWrap) ytWrap.style.display = 'block';
+    if (iframe) iframe.src = `https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  }
+
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  renderTrilhaLista();
+  showToast(`▶ ${v.titulo}`);
+}
+
+function trilhaNext() {
+  // Para vídeo nativo se estiver tocando
+  const vn = document.getElementById('trilha-video-native');
+  if (vn) { vn.pause(); vn.currentTime = 0; }
+  if (trilhaIdx < TRILHA_VIDEOS.length - 1) {
+    playTrilha(trilhaIdx + 1);
+  } else {
+    showToast('Trilha concluída! 🔥');
+    const wrap = document.getElementById('trilha-player-wrap');
+    if (wrap) wrap.style.display = 'none';
+    const iframe = document.getElementById('trilha-iframe');
+    if (iframe) iframe.src = '';
+    trilhaIdx = 0;
+    renderTrilhaLista();
+  }
+}
+
+function trilhaPrev() {
+  const vn = document.getElementById('trilha-video-native');
+  if (vn) { vn.pause(); vn.currentTime = 0; }
+  if (trilhaIdx > 0) playTrilha(trilhaIdx - 1);
+}
+
+function trilhaNext() {
+  if (trilhaIdx < TRILHA_VIDEOS.length - 1) {
+    playTrilha(trilhaIdx + 1);
+  } else {
+    showToast('Trilha concluída! 🔥 Sua mente está reprogramada.');
+    // Para o vídeo
+    const iframe = document.getElementById('trilha-iframe');
+    if (iframe) iframe.src = '';
+    const wrap = document.getElementById('trilha-player-wrap');
+    if (wrap) wrap.style.display = 'none';
+    trilhaIdx = 0;
+    renderTrilhaLista();
+  }
+}
+
+function trilhaPrev() {
+  if (trilhaIdx > 0) playTrilha(trilhaIdx - 1);
+}
+function init(){
+  updateGreeting();
+  initFrases();
+  renderPraticas();
+  renderPilares();
+  loadMetas();
+  renderBiblioteca();
+  renderViagens();
+  renderTrilhaLista();
+  renderAprender();
+  const d=gd();
+  const vis=d.vis?.[tk()];if(vis&&document.getElementById('vis-texto'))document.getElementById('vis-texto').value=vis;
+  const di=d.diario?.[tk()];if(di){['grat','dia','refl','int'].forEach(k=>{const el=document.getElementById('d-'+k);if(el)el.value=di[k]||'';});}
+}
+
+const _origGoTo=goTo;
+window.goTo=function(p){
+  _origGoTo(p);
+  if(p==='trilha')renderTrilhaLista();
+  if(p==='conhecimento'){renderAprender();renderViagens();}
+  if(p==='diario'){renderDiarioHistorico();const d=gd();const di=d.diario?.[tk()];if(di){['grat','dia','refl','int'].forEach(k=>{const el=document.getElementById('d-'+k);if(el)el.value=di[k]||'';});}}
+};
+
+document.addEventListener('DOMContentLoaded',()=>{init();setTimeout(hideSplash,2200);});
+window.addEventListener('load',()=>setTimeout(hideSplash,2200));
+setTimeout(hideSplash,4000);
+</script>
+</body>
+</html>
